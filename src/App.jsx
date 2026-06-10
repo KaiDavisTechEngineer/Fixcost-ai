@@ -301,6 +301,9 @@ function buildRedditLinks(ctx){
 }
 
 const MAX_MODEL=60,MAX_PROBLEM=500,MAX_NICK=40,MAX_MILE=12,COOLDOWN_MS=7000,SESSION_MAX=15;
+// Output token cap for direct-fetch path; the full guide JSON needs ~5.8k tokens
+// to complete, so 4096 truncated most responses into invalid JSON. See api/generate.js.
+const MAX_OUTPUT_TOKENS=8192;
 let _sessionCalls=0;
 
 function sanitize(s,m){if(m===undefined)m=300;if(!s||typeof s!=="string")return"";return s.trim().slice(0,m).replace(/<[^>]*>/g,"").replace(/[{}\[\]\\`\x00]/g,"").replace(/\n{3,}/g,"\n\n");}
@@ -992,13 +995,13 @@ async function callAI(year,make,model,trim,problem,stateCode,lang,externalSignal
   }
 
   // ── Second try: direct fetch to api.anthropic.com (works in artifact runtime only) ──
-  for (const m of ["claude-sonnet-4-20250514", "claude-haiku-4-5-20251001", "claude-3-5-sonnet-20241022"]) {
+  for (const m of ["claude-sonnet-4-6", "claude-haiku-4-5-20251001", "claude-3-5-sonnet-20241022"]) {
     try {
       console.log("[FixCost] fetch with " + m);
       const r = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: m, max_tokens: 4096, messages: [{ role: "user", content: prompt }] })
+        body: JSON.stringify({ model: m, max_tokens: MAX_OUTPUT_TOKENS, messages: [{ role: "user", content: prompt }] })
       });
       const data = await r.json();
       if (data?.error) { errChain.push(m + ": " + (data.error.message || data.error.type)); continue; }
@@ -1017,7 +1020,11 @@ async function callAI(year,make,model,trim,problem,stateCode,lang,externalSignal
   }
 
   // ── Fallback: client-side template generator ──
+  // Telemetry: make the silent template fallback visible (analytics + DOM event)
+  // so we can see how often the AI path is failing in the wild.
   console.warn("[FixCost] All AI attempts failed. Using template generator. Errors:", errChain);
+  try { if (typeof window !== "undefined" && typeof window.plausible === "function") window.plausible("ai_template_fallback", { props: { reason: (errChain[0] || "unknown").slice(0, 80) } }); } catch {}
+  try { if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("fixcost:ai-fallback", { detail: { errChain } })); } catch {}
   const obj = templateGuide(year, make, model, trim, problem, stateCode, lang);
   return { sections: jsonToSections(obj, lang, {year,make,model,trim,problem}), raw: JSON.stringify(obj), template: true };
 }

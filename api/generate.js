@@ -47,8 +47,15 @@ function getLaborRate(stateCode) {
 }
 
 export function resolveModel() {
-  return process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514";
+  return process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
 }
+
+// Output token cap. The repair-guide JSON schema needs ~5.8k output tokens for a
+// full guide; the old 4096 cap truncated most responses into invalid JSON that
+// the client then silently discarded in favor of the local template. 8192 gives
+// headroom so full guides complete. (Phase 2B item b trims the schema to bring
+// typical usage back down.)
+export const MAX_OUTPUT_TOKENS = 8192;
 
 export function buildPrompt({ year, make, model, trim, problem, stateCode, lang }) {
   const rate = getLaborRate(stateCode);
@@ -179,7 +186,7 @@ export default async function handler(req) {
       },
       body: JSON.stringify({
         model: model_id,
-        max_tokens: 4096,
+        max_tokens: MAX_OUTPUT_TOKENS,
         messages: [{ role: "user", content: prompt }],
       }),
     });
@@ -200,7 +207,23 @@ export default async function handler(req) {
       .map(b => b.text || "")
       .join("\n");
 
-    return new Response(JSON.stringify({ result: text, model: model_id }), {
+    // Telemetry: a max_tokens stop means the guide was cut off and the client
+    // will discard it as invalid JSON. Surface it instead of failing silently.
+    const truncated = data?.stop_reason === "max_tokens";
+    if (truncated) {
+      console.warn(
+        `[FixCost] truncated response (stop_reason=max_tokens) model=${model_id} ` +
+        `output_tokens=${data?.usage?.output_tokens} — guide likely discarded by client`
+      );
+    }
+
+    return new Response(JSON.stringify({
+      result: text,
+      model: model_id,
+      stop_reason: data?.stop_reason || null,
+      truncated,
+      usage: data?.usage || null,
+    }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

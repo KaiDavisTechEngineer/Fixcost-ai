@@ -18,6 +18,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "node --test 'api/**/*.test.mjs'",
+    "test:bench": "python3 -m pytest benchmarks/tests/ -q",
     "lint": "echo 'Add eslint config when needed' && exit 0"
   },
   "dependencies": {

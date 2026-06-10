@@ -19,12 +19,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildPrompt, resolveModel } from "../api/generate.js";
+import { buildPrompt, resolveModel, MAX_OUTPUT_TOKENS } from "../api/generate.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const API_KEY = process.env.ANTHROPIC_API_KEY || "";
 const MODEL = resolveModel();
-const MAX_TOKENS = parseInt(process.env.FIXCOST_MAX_TOKENS || "4096", 10); // app default
+// Track the production cap so the benchmark measures production; override for A/B.
+const MAX_TOKENS = parseInt(process.env.FIXCOST_MAX_TOKENS || String(MAX_OUTPUT_TOKENS), 10);
 
 const TAXONOMY = JSON.parse(
   fs.readFileSync(path.join(__dirname, "schema", "diagnosis_taxonomy.json"), "utf8")
