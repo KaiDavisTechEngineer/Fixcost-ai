@@ -935,21 +935,21 @@ async function callAI(year,make,model,trim,problem,stateCode,lang,externalSignal
     "Vehicle: "+sanitize(year,4)+" "+sanitize(make,30)+" "+sanitize(model,MAX_MODEL)+trimLine+"\n"+
     "Problem: "+sanitize(problem,MAX_PROBLEM)+rLine+langInstr+"\n\n"+
     "Generate a thorough, vehicle-specific repair guide as a JSON object. Use the trim/engine info to give exact torque specs, fluid types/capacities, common failure points, and known issues for THIS engine. Format:\n"+
-    "{\"overview\":\"2-4 sentences: what's likely wrong, the most probable root cause for THIS vehicle, and what the repair involves\","+
+    "{\"overview\":\"2-3 sentences: what's likely wrong, the most probable root cause for THIS vehicle, and what the repair involves\","+
     "\"repair_target\":\"the SINGLE most likely specific part or repair in short searchable terms — e.g. 'front sway bar end links', 'front brake pads and rotors', 'alternator', 'ignition coil'. This drives parts/forum/video searches, so be precise.\","+
-    "\"difficulty\":\"Beginner|Intermediate|Advanced\",\"time\":\"realistic range e.g. 2-4 hours\",\"difficulty_reason\":\"1-2 sentences explaining the rating\","+
-    "\"diagnosis\":[\"3-6 ordered steps to CONFIRM the root cause before buying parts — specific tests, what readings/symptoms confirm or rule out each cause, which OBD-II codes matter and what they mean for this engine\"],"+
+    "\"difficulty\":\"Beginner|Intermediate|Advanced\",\"time\":\"realistic range e.g. 2-4 hours\",\"difficulty_reason\":\"1 sentence explaining the rating\","+
+    "\"diagnosis\":[\"3-5 ordered steps to CONFIRM the root cause before buying parts — specific tests, what confirms/rules out each cause, which OBD-II codes matter for this engine\"],"+
     "\"cost\":{\"diy_parts\":\"$X-$Y\",\"tools\":\"$X-$Y\",\"total_diy\":\"$X-$Y\",\"shop_labor\":\"$X-$Y"+(rate?" at $"+rate.lo+"-$"+rate.hi+"/hr":"")+"\",\"total_shop\":\"$X-$Y\",\"savings\":\"$X-$Y\"},"+
     "\"tools\":[\"each tool WITH the specific size/spec needed, e.g. '10mm + 13mm sockets', 'torque wrench (10-100 ft-lb)'\"],"+
     "\"parts\":[\"each part with OEM vs aftermarket note and a rough price, e.g. 'Front sway bar end links (Moog K80xxx, ~$25-50/pair)'\"],"+
-    "\"steps\":[\"fallback single list ONLY if removal/installation split does not apply\"],"+
-    "\"removal_steps\":[\"5-12 SHORT scannable bullet steps to REMOVE the failed part. Each 1-2 sentences: the action plus the exact torque/measurement or a step-specific warning. A beginner should be able to follow without getting stuck.\"],"+
-    "\"installation_steps\":[\"5-12 SHORT scannable bullet steps to INSTALL the new part and VERIFY the fix — include torque specs, any reset/relearn procedure, and the final test-drive/confirmation step.\"],"+
-    "\"mistakes\":[\"4-6 mistakes UNIQUE to this make/model/year — known failure points, model-specific gotchas, year-range recalls/TSBs, what people commonly get wrong on THIS engine\"],"+
+    "\"steps\":[\"ONLY for a diagnostic-only fix with no part to replace; otherwise omit this key and use removal_steps + installation_steps instead. Never produce both.\"],"+
+    "\"removal_steps\":[\"4-8 short bullet steps to REMOVE the failed part. Each 1-2 sentences: the action plus the exact torque/measurement or a step-specific warning.\"],"+
+    "\"installation_steps\":[\"4-8 short bullet steps to INSTALL the new part and VERIFY the fix — include torque specs, any reset/relearn procedure, and the final test-drive/confirmation step.\"],"+
+    "\"mistakes\":[\"3-5 mistakes UNIQUE to this make/model/year — known failure points, model-specific gotchas, year-range recalls/TSBs, what people commonly get wrong on THIS engine\"],"+
     "\"safety\":[\"4-6 safety warnings, including model-specific ones (electronic parking brake service mode, battery registration, hybrid high-voltage precautions, refrigerant type, etc.)\"],"+
-    "\"tips\":[\"2-4 pro tips that make the job easier or prevent comebacks — torque sequences, penetrating-oil soak times, alignment notes, reset/relearn procedures\"],"+
+    "\"tips\":[\"2-3 pro tips that make the job easier or prevent comebacks — torque sequences, penetrating-oil soak times, alignment notes, reset/relearn procedures\"],"+
     "\"when_to_stop\":\"1-2 sentences: the specific signs that mean this is beyond a DIY repair and should go to a professional\","+
-    "\"youtube_searches\":[\"4 search terms tuned to THIS exact vehicle and repair\"]}\n\n"+
+    "\"youtube_searches\":[\"3-4 search terms tuned to THIS exact vehicle and repair\"]}\n\n"+
     "Be SPECIFIC to this exact vehicle — real torque values, real part numbers where you know them, real failure points. Avoid generic advice that applies to any car. Respond with ONLY the JSON object — no markdown, no preamble."
   );
 
