@@ -1,0 +1,21 @@
+{
+  "name": "FixCost AI",
+  "short_name": "FixCost",
+  "description": "AI-powered car repair guidance — know the fix, know the cost.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities", "automotive"],
+  "lang": "en-US",
+  "dir": "ltr"
+}

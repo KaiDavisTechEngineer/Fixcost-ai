@@ -1,0 +1,14 @@
+{
+  "name": "fixcost-qa-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Automated QA agent that drives FixCost AI through repair scenarios and writes a feedback report.",
+  "scripts": {
+    "start": "node qa-agent.mjs",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.45.0"
+  }
+}
