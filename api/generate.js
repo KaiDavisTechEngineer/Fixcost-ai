@@ -46,7 +46,11 @@ function getLaborRate(stateCode) {
   return null;
 }
 
-function buildPrompt({ year, make, model, trim, problem, stateCode, lang }) {
+export function resolveModel() {
+  return process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514";
+}
+
+export function buildPrompt({ year, make, model, trim, problem, stateCode, lang }) {
   const rate = getLaborRate(stateCode);
   const stateName = STATE_NAMES[sanitize(stateCode, 2).toUpperCase()] || "";
   const rateLine = rate
@@ -163,7 +167,7 @@ export default async function handler(req) {
   }
 
   const prompt = buildPrompt({ year, make, model, trim, problem, stateCode, lang });
-  const model_id = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514";
+  const model_id = resolveModel();
 
   try {
     const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
