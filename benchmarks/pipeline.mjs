@@ -73,6 +73,39 @@ function detectSafety(obj) {
   return HV_RE.test(hay);
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504, 529]);
+const RETRYABLE_TYPE = new Set(["overloaded_error", "rate_limit_error", "api_error", "timeout_error"]);
+
+// Call the model with bounded retry on transient network drops / overload.
+// Network-level "fetch failed" and 429/5xx are retried with backoff; a clean
+// API error (e.g. invalid model) is returned immediately, not retried.
+async function callWithRetry(prompt, attempts = 4) {
+  const backoff = [2000, 5000, 12000];
+  let lastErr = null;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({ model: MODEL, max_tokens: MAX_TOKENS, messages: [{ role: "user", content: prompt }] }),
+      });
+      const data = await r.json();
+      if (data?.error && RETRYABLE_TYPE.has(data.error.type) && i < attempts - 1) {
+        await sleep(backoff[i] || 12000); continue;
+      }
+      if (!r.ok && RETRYABLE_STATUS.has(r.status) && !data?.error && i < attempts - 1) {
+        await sleep(backoff[i] || 12000); continue;
+      }
+      return { data, errorMsg: null };
+    } catch (e) {
+      lastErr = e.message;
+      if (i < attempts - 1) { await sleep(backoff[i] || 12000); continue; }
+    }
+  }
+  return { data: null, errorMsg: lastErr || "request failed after retries" };
+}
+
 async function run(caseObj) {
   const input = caseToInput(caseObj);
   const basePrompt = buildPrompt(input);
@@ -84,17 +117,7 @@ async function run(caseObj) {
   const prompt = basePrompt + addendum;
 
   const t0 = Date.now();
-  let data, errorMsg = null;
-  try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({ model: MODEL, max_tokens: MAX_TOKENS, messages: [{ role: "user", content: prompt }] }),
-    });
-    data = await r.json();
-  } catch (e) {
-    errorMsg = e.message;
-  }
+  const { data, errorMsg } = await callWithRetry(prompt);
   const latency_ms = Date.now() - t0;
 
   if (errorMsg || data?.error) {

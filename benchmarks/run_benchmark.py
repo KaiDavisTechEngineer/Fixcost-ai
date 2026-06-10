@@ -19,6 +19,7 @@ import datetime as dt
 import json
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -79,7 +80,9 @@ def load_champion():
 def run_split(cases, token_baseline, verbose=False):
     """Run + score a list of cases. Returns (per_case_records, aggregate)."""
     records = []
-    for c in cases:
+    for i, c in enumerate(cases):
+        if i > 0:
+            time.sleep(1.0)  # be gentle on the connection between sequential calls
         out = run_pipeline(c)
         scored = score_case(c, out, token_baseline)
         rec = {"case": c["id"], **scored,
@@ -229,6 +232,11 @@ def main():
         # First pass with no efficiency baseline (scored later); freeze baseline from observed tokens.
         all_recs_train, _ = run_split(train, None, verbose=args.verbose)
         all_recs_heldout, _ = run_split(heldout, None, verbose=args.verbose)
+        errored = [r["case"] for r in all_recs_train + all_recs_heldout if r.get("error")]
+        if errored:
+            print(f"ABORT: transport error on {errored} (not truncation) — re-run; "
+                  f"refusing to freeze a champion over failed calls", file=sys.stderr)
+            sys.exit(1)
         all_tokens = [r["tokens"] for r in all_recs_train + all_recs_heldout if r.get("tokens")]
         token_baseline = round(sum(all_tokens) / len(all_tokens)) if all_tokens else None
         # Re-score with the frozen baseline so efficiency is meaningful.
