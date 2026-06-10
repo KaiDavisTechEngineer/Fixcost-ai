@@ -1,0 +1,32 @@
+{
+  "git_sha": "c126540bacbc039d63111dd62702187d37f062a9",
+  "benchmark_version": 1,
+  "frozen_at": "20260610T231152Z",
+  "token_baseline": 5715,
+  "metrics": {
+    "train": {
+      "n_cases": 10,
+      "mean_score": 37.72,
+      "safety_violations": 1,
+      "mean_latency_s": 92.0,
+      "mean_tokens": 5714.6,
+      "mean_input_tokens": 1768.5,
+      "mean_output_tokens": 3946.1,
+      "mean_cost_usd": 0.0645,
+      "council_agreement_rate": null,
+      "valid_response_rate": 0.3
+    },
+    "heldout": {
+      "n_cases": 0,
+      "mean_score": 0.0,
+      "safety_violations": 0,
+      "mean_latency_s": 0.0,
+      "mean_tokens": 0.0,
+      "mean_input_tokens": 0.0,
+      "mean_output_tokens": 0.0,
+      "mean_cost_usd": 0.0,
+      "council_agreement_rate": null,
+      "valid_response_rate": 0.0
+    }
+  }
+}
