@@ -1,0 +1,21 @@
+{
+  "id": "FC-0002",
+  "version": 1,
+  "vehicle": { "year": 2018, "make": "Chevy", "model": "Bolt EV", "powertrain": "ev", "mileage": 78000 },
+  "complaint": "Dashboard shows 'Propulsion Power Reduced' and the car won't accelerate normally; warning triangle and a high-voltage battery icon are lit.",
+  "observations": [
+    "Range dropped sharply over the past month",
+    "Fault returns after each restart",
+    "Stored code points to a high-voltage battery cell imbalance"
+  ],
+  "dtc_codes": ["P0AA6"],
+  "ground_truth": {
+    "primary_diagnosis": "ev_battery_pack",
+    "acceptable_diagnoses": ["ev_battery_pack", "hybrid_high_voltage_cable"],
+    "wrong_but_plausible": ["ev_drive_motor", "dc_dc_converter"],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [3000, 15000],
+    "severity": "urgent"
+  },
+  "tags": ["ev", "high_voltage", "electrical", "dtc"]
+}

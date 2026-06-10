@@ -1,0 +1,21 @@
+{
+  "id": "FC-0006",
+  "version": 1,
+  "vehicle": { "year": 2014, "make": "Jeep", "model": "Grand Cherokee", "powertrain": "gas", "mileage": 134000 },
+  "complaint": "Temperature gauge shot up to the red and there's steam coming from under the hood; pulled over immediately.",
+  "observations": [
+    "Coolant reservoir is empty",
+    "Visible green coolant trail down the front of the engine",
+    "Engine was still running hot at the time of stopping"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "coolant_leak",
+    "acceptable_diagnoses": ["coolant_leak", "radiator_hose_leak", "water_pump"],
+    "wrong_but_plausible": ["thermostat", "head_gasket"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [150, 900],
+    "severity": "do_not_drive"
+  },
+  "tags": ["cooling", "overheating", "urgent"]
+}

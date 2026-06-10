@@ -1,0 +1,21 @@
+{
+  "id": "FC-0004",
+  "version": 1,
+  "vehicle": { "year": 2016, "make": "Honda", "model": "Civic", "powertrain": "gas", "mileage": 98000 },
+  "complaint": "Grinding noise from the front that sounds like the brakes, but it's there constantly while driving — not just when I press the brake pedal.",
+  "observations": [
+    "Grinding is constant and rises with road speed",
+    "Pedal feel is normal and braking distance is unchanged",
+    "Noise unaffected by braking; changes with cornering load"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "wheel_bearing_front",
+    "acceptable_diagnoses": ["wheel_bearing_front", "wheel_bearing_front_left", "wheel_bearing_front_right"],
+    "wrong_but_plausible": ["brake_pads_front", "brake_rotors_front"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [250, 500],
+    "severity": "moderate"
+  },
+  "tags": ["noise", "brakes", "adversarial"]
+}

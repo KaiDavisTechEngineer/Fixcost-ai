@@ -1,0 +1,21 @@
+{
+  "id": "FC-0005",
+  "version": 1,
+  "vehicle": { "year": 2015, "make": "Toyota", "model": "Camry", "powertrain": "gas", "mileage": 116000 },
+  "complaint": "Check engine light is on and flashing at idle, engine shakes and runs rough, slight loss of power.",
+  "observations": [
+    "Stored misfire code for cylinder 1",
+    "Roughness worst at idle, smooths out somewhat at higher RPM",
+    "Plugs were last replaced over 90,000 miles ago"
+  ],
+  "dtc_codes": ["P0301"],
+  "ground_truth": {
+    "primary_diagnosis": "ignition_coil",
+    "acceptable_diagnoses": ["ignition_coil", "spark_plugs"],
+    "wrong_but_plausible": ["fuel_injector", "vacuum_leak"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [150, 400],
+    "severity": "moderate"
+  },
+  "tags": ["engine", "misfire", "dtc"]
+}

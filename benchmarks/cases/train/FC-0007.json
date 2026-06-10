@@ -1,0 +1,21 @@
+{
+  "id": "FC-0007",
+  "version": 1,
+  "vehicle": { "year": 2017, "make": "Hyundai", "model": "Elantra", "powertrain": "gas", "mileage": 89000 },
+  "complaint": "Battery keeps dying — I've jump-started it three times this week and even put in a new battery, but it died again.",
+  "observations": [
+    "Headlights dim and dash flickers at idle",
+    "Battery warning light comes on while driving",
+    "A charging-system test shows system voltage dropping under load instead of rising"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "alternator",
+    "acceptable_diagnoses": ["alternator"],
+    "wrong_but_plausible": ["battery_weak", "battery_dead", "parasitic_draw"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [350, 700],
+    "severity": "moderate"
+  },
+  "tags": ["electrical", "charging", "adversarial"]
+}

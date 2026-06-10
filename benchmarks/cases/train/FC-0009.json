@@ -1,0 +1,21 @@
+{
+  "id": "FC-0009",
+  "version": 1,
+  "vehicle": { "year": 2013, "make": "Ford", "model": "C-MAX Hybrid", "powertrain": "hybrid", "mileage": 151000 },
+  "complaint": "Suspension feels like it's bottoming out over bumps with a clunk, and the front end keeps bouncing after a dip.",
+  "observations": [
+    "Front end continues to oscillate after pushing down on the fender",
+    "Clunk over sharp bumps from the front",
+    "Uneven tire wear starting on the front tires"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "strut_assembly",
+    "acceptable_diagnoses": ["strut_assembly", "shock_absorber", "strut_mount"],
+    "wrong_but_plausible": ["control_arm_bushing", "sway_bar_end_link"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [400, 900],
+    "severity": "moderate"
+  },
+  "tags": ["suspension", "hybrid"]
+}

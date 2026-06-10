@@ -1,0 +1,21 @@
+{
+  "id": "FC-0010",
+  "version": 1,
+  "vehicle": { "year": 2016, "make": "Nissan", "model": "Altima", "powertrain": "gas", "mileage": 105000 },
+  "complaint": "Brake pedal feels soft and sinks slowly toward the floor; takes much longer to stop and there's a squeal.",
+  "observations": [
+    "Brake fluid reservoir is below the minimum line",
+    "A damp, shiny film is visible at the inside of the right front wheel",
+    "Pedal slowly sinks when held under steady pressure at a stop"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "brake_fluid_leak",
+    "acceptable_diagnoses": ["brake_fluid_leak", "brake_caliper_leaking", "brake_master_cylinder"],
+    "wrong_but_plausible": ["brake_pads_front"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [150, 600],
+    "severity": "urgent"
+  },
+  "tags": ["brakes", "safety_critical", "urgent"]
+}

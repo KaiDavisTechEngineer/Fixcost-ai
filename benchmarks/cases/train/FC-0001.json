@@ -1,0 +1,21 @@
+{
+  "id": "FC-0001",
+  "version": 1,
+  "vehicle": { "year": 2013, "make": "Ford", "model": "C-MAX Hybrid", "powertrain": "hybrid", "mileage": 142000 },
+  "complaint": "Whining noise from the front end that rises with speed, plus a faint burning smell after highway driving.",
+  "observations": [
+    "Noise persists in neutral while coasting",
+    "Smell strongest near the right front wheel",
+    "Noise changes pitch when swerving gently left vs right"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "wheel_bearing_front_right",
+    "acceptable_diagnoses": ["wheel_bearing_front_right", "wheel_bearing_front"],
+    "wrong_but_plausible": ["cv_joint", "transmission_slipping"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [250, 550],
+    "severity": "moderate"
+  },
+  "tags": ["noise", "drivetrain", "hybrid"]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "FC-0003",
+  "version": 1,
+  "vehicle": { "year": 2020, "make": "Toyota", "model": "Camry", "powertrain": "gas", "mileage": 41000 },
+  "complaint": "Occasional faint rattle from somewhere under the car that I can't reproduce on demand; no warning lights, drives perfectly otherwise.",
+  "observations": [
+    "Rattle only on rough roads, never on smooth pavement",
+    "No looseness found in a basic suspension shake test",
+    "Heat shields and exhaust hangers appear intact on a quick look"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "no_fault_found",
+    "acceptable_diagnoses": ["no_fault_found", "needs_further_diagnosis"],
+    "wrong_but_plausible": ["exhaust_flex_pipe", "sway_bar_end_link"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [0, 150],
+    "severity": "info"
+  },
+  "tags": ["noise", "monitor", "over_diagnosis"]
+}

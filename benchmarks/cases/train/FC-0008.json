@@ -1,0 +1,21 @@
+{
+  "id": "FC-0008",
+  "version": 1,
+  "vehicle": { "year": 2018, "make": "Honda", "model": "CR-V", "powertrain": "gas", "mileage": 64000 },
+  "complaint": "Check engine light came on steady; car drives totally normally with no change in power or fuel economy.",
+  "observations": [
+    "Small evaporative-emissions leak code stored",
+    "Light first appeared right after a fuel fill-up",
+    "Gas cap clicks but the seal looks worn"
+  ],
+  "dtc_codes": ["P0456"],
+  "ground_truth": {
+    "primary_diagnosis": "evap_leak_gas_cap",
+    "acceptable_diagnoses": ["evap_leak_gas_cap", "evap_purge_valve", "evap_canister"],
+    "wrong_but_plausible": ["oxygen_sensor_downstream"],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [0, 250],
+    "severity": "info"
+  },
+  "tags": ["emissions", "engine", "dtc"]
+}
