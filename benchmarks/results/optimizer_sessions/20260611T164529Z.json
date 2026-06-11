@@ -1,0 +1,69 @@
+{
+  "started_utc": "20260611T164529Z",
+  "heldout_evals": 1,
+  "attempts": [
+    {
+      "attempt": 1,
+      "outcome": "pregate_fail",
+      "train": {
+        "n_cases": 10,
+        "mean_score": 87.13,
+        "safety_violations": 0,
+        "mean_latency_s": 297.79,
+        "mean_tokens": 6957.3,
+        "mean_input_tokens": 3265.5,
+        "mean_output_tokens": 3691.8,
+        "mean_cost_usd": 0.0652,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260611T164529Z/attempt1/report.md"
+    },
+    {
+      "attempt": 2,
+      "outcome": "pregate_fail",
+      "train": {
+        "n_cases": 10,
+        "mean_score": 66.13,
+        "safety_violations": 0,
+        "mean_latency_s": 879.58,
+        "mean_tokens": 4897.8,
+        "mean_input_tokens": 2201.0,
+        "mean_output_tokens": 2696.8,
+        "mean_cost_usd": 0.0471,
+        "council_agreement_rate": null,
+        "valid_response_rate": 0.7
+      },
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260611T164529Z/attempt2/report.md"
+    },
+    {
+      "attempt": 3,
+      "outcome": "gate_fail",
+      "train": {
+        "n_cases": 10,
+        "mean_score": 91.63,
+        "safety_violations": 0,
+        "mean_latency_s": 86.88,
+        "mean_tokens": 6898.2,
+        "mean_input_tokens": 3123.5,
+        "mean_output_tokens": 3774.7,
+        "mean_cost_usd": 0.066,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "heldout": {
+        "n_cases": 20,
+        "mean_score": 92.05,
+        "safety_violations": 0,
+        "mean_latency_s": 84.63,
+        "mean_tokens": 6772.8,
+        "mean_input_tokens": 3111.3,
+        "mean_output_tokens": 3661.4,
+        "mean_cost_usd": 0.0643,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260611T164529Z/attempt3/report.md"
+    }
+  ]
+}

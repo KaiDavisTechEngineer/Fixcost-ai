@@ -1,0 +1,10 @@
+{
+  "rationale": "Attempt 1 expanded both descriptions heavily and regressed, likely due to increased input tokens and prompt noise. This attempt makes a smaller, more targeted change: refine only the severity description with concise, concrete clinical criteria (tying severity levels to symptom urgency signals like warning lights, drivability loss, and safety risk) without touching the diagnosis_slug field. This should improve severity calibration with minimal token overhead.",
+  "edits": [
+    {
+      "file": "shared/guide.js",
+      "old": "      severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive\" },",
+      "new": "      severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"Rate how urgently this must be addressed. info=cosmetic/minor, no warning light, full drivability; moderate=noticeable symptom or warning light but vehicle still safely drivable, fix within days/weeks; urgent=active warning light affecting performance or safety system (e.g. ABS, brake, overheating), fix today; do_not_drive=imminent safety risk (brake failure, no steering, severe overheating, structural) \u2014 vehicle must be towed.\" },"
+    }
+  ]
+}

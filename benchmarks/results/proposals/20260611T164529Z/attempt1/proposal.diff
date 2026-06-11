@@ -1,0 +1,13 @@
+--- a/shared/guide.js
++++ b/shared/guide.js
+@@ -121,8 +121,8 @@
+     properties: {
+       overview: { type: "string" },
+       repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
+-      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate." },
+-      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
++      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Choose the most specific slug that fits the primary complaint (e.g. prefer brake_pads_and_rotors_front over brake_pads_front when both are worn; prefer ignition_coil over engine_misfire when a coil fault is indicated). Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis only if genuinely indeterminate after considering all symptoms." },
++      severity: { type: "string", enum: SEVERITY_LEVELS, description: "Pick exactly one level based on safety and drivability impact. info=cosmetic/informational, no effect on safety or drivability (e.g. wiper blade, cabin filter, minor trim). moderate=repair needed within days-weeks; vehicle is drivable but component degrading (e.g. worn brake pads with meat remaining, minor oil seep, weak battery). urgent=repair within 24-48 hours; continued driving risks component failure or damage (e.g. brake pads at metal-on-metal, overheating, significant fluid leak). do_not_drive=imminent safety risk; vehicle must not be driven until repaired (e.g. brake fluid loss, steering loss, structural failure, active coolant leak causing overheat)." },
+       difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
+       time: { type: "string" },
+       difficulty_reason: { type: "string" },

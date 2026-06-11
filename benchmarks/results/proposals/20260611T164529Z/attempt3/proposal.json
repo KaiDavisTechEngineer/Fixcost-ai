@@ -1,0 +1,10 @@
+{
+  "rationale": "Both prior attempts regressed \u2014 attempt 1 by adding too much text, attempt 2 severely by apparently corrupting the schema. The safest move is a minimal, surgical change to only the diagnosis_slug description, adding a short disambiguation hint for the most commonly confused slug pairs (brake pad variants, bearing side specificity, needs_further_diagnosis vs a specific slug) without touching severity or any other field. This should nudge the model toward the correct slug without introducing noise that hurt attempts 1 and 2.",
+  "edits": [
+    {
+      "file": "shared/guide.js",
+      "old": "diagnosis_slug: { type: \"string\", enum: DIAGNOSIS_SLUGS, description: \"the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid \u2014 never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate.\" },",
+      "new": "diagnosis_slug: { type: \"string\", enum: DIAGNOSIS_SLUGS, description: \"the SINGLE best-matching root-cause slug from the controlled list. Pick the MOST SPECIFIC slug available (e.g. brake_pads_and_rotors_front over brake_pads_front when both are replaced; wheel_bearing_front_left over wheel_bearing_front when side is known). Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid \u2014 never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis only if the root cause is genuinely indeterminate after considering all symptoms.\" },"
+    }
+  ]
+}

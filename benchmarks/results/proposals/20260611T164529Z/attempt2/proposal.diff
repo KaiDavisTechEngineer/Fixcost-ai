@@ -1,0 +1,11 @@
+--- a/shared/guide.js
++++ b/shared/guide.js
+@@ -122,7 +122,7 @@
+       overview: { type: "string" },
+       repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
+       diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate." },
+-      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
++      severity: { type: "string", enum: SEVERITY_LEVELS, description: "Rate how urgently this must be addressed. info=cosmetic/minor, no warning light, full drivability; moderate=noticeable symptom or warning light but vehicle still safely drivable, fix within days/weeks; urgent=active warning light affecting performance or safety system (e.g. ABS, brake, overheating), fix today; do_not_drive=imminent safety risk (brake failure, no steering, severe overheating, structural) — vehicle must be towed." },
+       difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
+       time: { type: "string" },
+       difficulty_reason: { type: "string" },
