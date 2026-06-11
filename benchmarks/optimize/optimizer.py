@@ -16,10 +16,17 @@ from pathlib import Path
 # The only surface the optimizer may modify (v1: the shared prompt/schema).
 ALLOWED_FILES = ["shared/guide.js"]
 
-# Hard constraint #1: safety/HV content is protected. Any edit whose old or new
-# text brushes against it is auto-rejected — changes there need Kai's explicit
-# sign-off, which means a human-authored change, not an optimizer proposal.
-SAFETY_GUARD = re.compile(r"safety|high[\s-]?voltage|must_mention|\bhv\b", re.IGNORECASE)
+# Hard constraint #1: safety/HV content is protected. Two layers (Kai-approved
+# design, 2026-06-11):
+#   1. This regex rejects edit text that touches HV/safety-warning machinery
+#      terms. The bare word "safety" is deliberately NOT here — legitimate
+#      severity-calibration prose uses it ("a safety risk if driven").
+#   2. verifier.check_protected_invariants() asserts post-apply that the actual
+#      safety-field constructs in shared/guide.js are byte-identical — the
+#      stronger guarantee, independent of edit vocabulary.
+SAFETY_GUARD = re.compile(
+    r"high[\s-]?voltage|must_mention|\bhv\b|safety[\s_]?warnings?|\"safety\"|'safety'|\bsafety\s*:",
+    re.IGNORECASE)
 
 PROPOSAL_TOOL = {
     "name": "propose_change",

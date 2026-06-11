@@ -112,9 +112,37 @@ def test_old_text_missing_or_ambiguous_rejected(repo):
 
 def test_safety_content_rejected(repo):
     for bad in ("safety warnings list", "high-voltage isolation", "high voltage",
-                "must_mention_safety", "the HV system"):
+                "must_mention_safety", "the HV system", '"safety":["..."]',
+                "safety: strArr"):
         errs = validate_proposal(_prop(new=bad), repo)
         assert any("safety" in e.lower() for e in errs), bad
+
+
+def test_severity_prose_using_word_safety_is_allowed(repo):
+    # Kai-approved narrowing (2026-06-11): calibration prose may say "safety
+    # risk"; the byte-level invariant check is the real guard.
+    ok = _prop(new="urgent=fix within days, a safety risk if driven; moderate=fix soon")
+    assert validate_proposal(ok, repo) == []
+
+
+# ---- 3b. post-apply protected invariants ----
+
+def test_protected_invariants_detect_removal(tmp_path):
+    from optimize.verifier import check_protected_invariants
+    inv = {"f.js": ["KEEP THIS SPAN", "AND THIS ONE"]}
+    (tmp_path / "f.js").write_text("xx KEEP THIS SPAN yy AND THIS ONE zz")
+    assert check_protected_invariants(tmp_path, inv) == []
+    (tmp_path / "f.js").write_text("xx KEEP THIS SPAN yy zz")  # span removed
+    violations = check_protected_invariants(tmp_path, inv)
+    assert len(violations) == 1 and "AND THIS ONE" in violations[0]
+
+
+def test_protected_invariants_match_real_file():
+    """Drift guard: if shared/guide.js is refactored, the invariant spans must
+    be updated too — otherwise every proposal would be (fail-safe) rejected."""
+    from optimize.verifier import PROTECTED_INVARIANTS, check_protected_invariants
+    repo_root = Path(__file__).resolve().parents[2]
+    assert check_protected_invariants(repo_root, PROTECTED_INVARIANTS) == []
 
 
 def test_apply_edits_pure():

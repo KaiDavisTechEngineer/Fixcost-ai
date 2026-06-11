@@ -22,6 +22,35 @@ from run_benchmark import evaluate_gate  # noqa: E402
 
 MAX_HELDOUT_EVALS = 3
 
+# Hard constraint #1 backstop (Kai-approved design, 2026-06-11): after a
+# proposal is applied, these exact byte spans must still be present in the
+# file, or the proposal is rejected regardless of what the edit text looked
+# like. They are the safety-warning constructs of shared/guide.js: the prompt's
+# safety field spec, the tool schema's safety property, and its required-list
+# entry. A drift test asserts these strings match the real file.
+PROTECTED_INVARIANTS = {
+    "shared/guide.js": [
+        '\'"safety":["4-6 safety warnings including model-specific ones (electronic parking '
+        'brake service mode, battery registration, hybrid high-voltage, refrigerant type, etc.)"],\'',
+        "      safety: strArr,",
+        'required: ["overview", "repair_target", "diagnosis_slug", "severity", "difficulty", "cost", "safety"],',
+    ],
+}
+
+
+def check_protected_invariants(root, invariants=None):
+    """Return a list of violations: protected constructs missing post-apply."""
+    invariants = PROTECTED_INVARIANTS if invariants is None else invariants
+    violations = []
+    for rel, spans in invariants.items():
+        path = Path(root) / rel
+        content = path.read_text() if path.exists() else ""
+        for span in spans:
+            if span not in content:
+                violations.append(f"{rel}: protected safety construct altered or removed: "
+                                  f"{span[:80]!r}…")
+    return violations
+
 
 class HeldoutBudgetExceeded(RuntimeError):
     pass

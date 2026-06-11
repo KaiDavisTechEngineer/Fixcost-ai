@@ -75,7 +75,8 @@ def main():
         errors = optimizer.validate_proposal(proposal, REPO)
         if errors:
             print("proposal rejected statically:", *errors, sep="\n  ")
-            session.record_attempt({"attempt": attempt, "outcome": "static_reject", "errors": errors})
+            session.record_attempt({"attempt": attempt, "outcome": "static_reject",
+                                    "errors": errors, "proposal": proposal})
             prior.append({"attempt": attempt, "rationale": proposal.get("rationale"),
                           "result": "rejected before evaluation: " + "; ".join(errors)})
             continue
@@ -84,6 +85,18 @@ def main():
         wt = verifier.create_worktree(REPO)
         try:
             diff = verifier.apply_proposal_to_worktree(wt, proposal["edits"])
+
+            # Hard constraint #1 backstop: protected safety constructs must be
+            # byte-identical after the edits, whatever the edit text said.
+            violations = verifier.check_protected_invariants(wt)
+            if violations:
+                print("proposal rejected by safety invariant:", *violations, sep="\n  ")
+                session.record_attempt({"attempt": attempt, "outcome": "invariant_reject",
+                                        "violations": violations, "proposal": proposal})
+                prior.append({"attempt": attempt, "rationale": proposal.get("rationale"),
+                              "result": "rejected: altered protected safety content"})
+                continue
+
             tests_ok, test_log = verifier.run_test_suite(wt)
             print(f"test suite: {'PASS' if tests_ok else 'FAIL'}")
             if not tests_ok:

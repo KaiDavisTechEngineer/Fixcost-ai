@@ -1,0 +1,27 @@
+{
+  "started_utc": "20260611T152914Z",
+  "heldout_evals": 0,
+  "attempts": [
+    {
+      "attempt": 1,
+      "outcome": "static_reject",
+      "errors": [
+        "edit 0: touches protected safety/HV content \u2014 auto-rejected (requires explicit human sign-off)"
+      ]
+    },
+    {
+      "attempt": 2,
+      "outcome": "static_reject",
+      "errors": [
+        "edit 0: touches protected safety/HV content \u2014 auto-rejected (requires explicit human sign-off)"
+      ]
+    },
+    {
+      "attempt": 3,
+      "outcome": "static_reject",
+      "errors": [
+        "edit 1: touches protected safety/HV content \u2014 auto-rejected (requires explicit human sign-off)"
+      ]
+    }
+  ]
+}
