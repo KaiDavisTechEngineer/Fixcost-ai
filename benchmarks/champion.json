@@ -1,32 +1,33 @@
 {
-  "git_sha": "c126540bacbc039d63111dd62702187d37f062a9",
+  "git_sha": "6997a8efe49dd68b8e762c04f4b3aea0d02cc0cf",
   "benchmark_version": 1,
-  "frozen_at": "20260610T231152Z",
+  "frozen_at": "20260611T151332Z",
   "token_baseline": 5715,
+  "notes": "Promoted after Phase 2B items a-d (Kai-approved). Train metrics from the f6db9bb run (item d verified byte-identical, heldout-case commit does not touch the pipeline); heldout from the first heldout baseline at 6997a8e.",
   "metrics": {
     "train": {
       "n_cases": 10,
-      "mean_score": 37.72,
-      "safety_violations": 1,
-      "mean_latency_s": 92.0,
-      "mean_tokens": 5714.6,
-      "mean_input_tokens": 1768.5,
-      "mean_output_tokens": 3946.1,
-      "mean_cost_usd": 0.0645,
+      "mean_score": 88.5,
+      "safety_violations": 0,
+      "mean_latency_s": 88.38,
+      "mean_tokens": 6632.2,
+      "mean_input_tokens": 3060.5,
+      "mean_output_tokens": 3571.7,
+      "mean_cost_usd": 0.0628,
       "council_agreement_rate": null,
-      "valid_response_rate": 0.3
+      "valid_response_rate": 1.0
     },
     "heldout": {
-      "n_cases": 0,
-      "mean_score": 0.0,
+      "n_cases": 20,
+      "mean_score": 92.51,
       "safety_violations": 0,
-      "mean_latency_s": 0.0,
-      "mean_tokens": 0.0,
-      "mean_input_tokens": 0.0,
-      "mean_output_tokens": 0.0,
-      "mean_cost_usd": 0.0,
+      "mean_latency_s": 85.36,
+      "mean_tokens": 6736.8,
+      "mean_input_tokens": 3048.3,
+      "mean_output_tokens": 3688.4,
+      "mean_cost_usd": 0.0645,
       "council_agreement_rate": null,
-      "valid_response_rate": 0.0
+      "valid_response_rate": 1.0
     }
   }
 }
