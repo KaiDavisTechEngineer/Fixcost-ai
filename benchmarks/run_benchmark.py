@@ -86,7 +86,7 @@ def run_split(cases, token_baseline, verbose=False):
         out = run_pipeline(c)
         scored = score_case(c, out, token_baseline)
         rec = {"case": c["id"], **scored,
-               "diagnosis_slug": out.get("diagnosis_slug"), "severity": out.get("severity"),
+               "diagnosis_slug": out.get("diagnosis_slug"), "app_severity": out.get("severity"),
                "cost_range_usd": out.get("cost_range_usd"), "mentions_safety": out.get("mentions_safety"),
                "tokens": out.get("tokens"), "input_tokens": out.get("input_tokens"),
                "output_tokens": out.get("output_tokens"), "latency_ms": out.get("latency_ms"),
@@ -283,7 +283,7 @@ def run_rescore(cases, records, token_baseline):
     for r in records:
         c = by_id[r["case"]]
         out = {"diagnosis_slug": r["diagnosis_slug"], "cost_range_usd": r["cost_range_usd"],
-               "severity": r["severity"], "mentions_safety": r["mentions_safety"], "tokens": r["tokens"]}
+               "severity": r["app_severity"], "mentions_safety": r["mentions_safety"], "tokens": r["tokens"]}
         s = score_case(c, out, token_baseline)
         merged = {**r, **s}
         rescored.append(merged)

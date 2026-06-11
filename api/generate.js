@@ -57,6 +57,38 @@ export function resolveModel() {
 // typical usage back down.)
 export const MAX_OUTPUT_TOKENS = 8192;
 
+export const SEVERITY_LEVELS = ["info", "moderate", "urgent", "do_not_drive"];
+
+// Controlled diagnosis vocabulary. MUST stay in sync with
+// benchmarks/schema/diagnosis_taxonomy.json (guarded by a unit test). Inlined
+// because the edge runtime can't read the file at request time.
+export const DIAGNOSIS_SLUGS = [
+  "no_fault_found", "needs_further_diagnosis", "brake_pads_front", "brake_pads_rear", "brake_rotors_front", "brake_rotors_rear",
+  "brake_pads_and_rotors_front", "brake_pads_and_rotors_rear", "brake_caliper_seized", "brake_caliper_leaking", "brake_master_cylinder", "brake_booster",
+  "brake_fluid_leak", "brake_line_corroded", "abs_wheel_speed_sensor", "abs_module", "parking_brake_cable", "wheel_bearing_front",
+  "wheel_bearing_front_right", "wheel_bearing_front_left", "wheel_bearing_rear", "cv_joint", "cv_axle", "tie_rod_end",
+  "ball_joint", "control_arm", "control_arm_bushing", "sway_bar_end_link", "sway_bar_bushing", "strut_assembly",
+  "strut_mount", "shock_absorber", "coil_spring_broken", "wheel_alignment", "tire_worn", "tire_puncture",
+  "tire_sidewall_damage", "tire_pressure_low", "tpms_sensor", "wheel_balance", "wheel_lug_stud", "power_steering_pump",
+  "power_steering_fluid_leak", "steering_rack", "steering_rack_leak", "electric_power_steering_motor", "intermediate_steering_shaft", "engine_misfire",
+  "ignition_coil", "spark_plugs", "spark_plug_wires", "fuel_injector", "fuel_pump", "fuel_filter",
+  "fuel_pressure_regulator", "mass_air_flow_sensor", "oxygen_sensor_upstream", "oxygen_sensor_downstream", "throttle_body", "egr_valve",
+  "evap_purge_valve", "evap_canister", "evap_leak_gas_cap", "pcv_valve", "intake_manifold_gasket", "vacuum_leak",
+  "timing_chain", "timing_belt", "timing_cover_leak", "valve_cover_gasket_leak", "head_gasket", "oil_leak_rear_main_seal",
+  "oil_leak_oil_pan_gasket", "oil_pan_drain_plug", "oil_consumption_piston_rings", "low_oil_pressure", "engine_mount", "serpentine_belt",
+  "belt_tensioner", "idler_pulley", "knock_sensor", "camshaft_position_sensor", "crankshaft_position_sensor", "variable_valve_timing_solenoid",
+  "carbon_buildup_intake_valves", "catalytic_converter", "exhaust_leak_manifold", "exhaust_flex_pipe", "muffler", "thermostat",
+  "water_pump", "radiator", "radiator_fan_motor", "radiator_hose_leak", "coolant_leak", "heater_core",
+  "coolant_temp_sensor", "head_gasket_coolant_loss", "battery_weak", "battery_dead", "alternator", "starter_motor",
+  "starter_solenoid", "ground_strap_corroded", "parasitic_draw", "ignition_switch", "blower_motor", "blower_motor_resistor",
+  "headlight_bulb", "wiring_harness_chafe", "body_control_module", "ac_compressor", "ac_refrigerant_low", "ac_condenser",
+  "ac_evaporator", "ac_expansion_valve", "cabin_air_filter", "ac_clutch", "transmission_fluid_low", "transmission_slipping",
+  "transmission_solenoid", "torque_converter", "clutch_worn", "clutch_master_cylinder", "transmission_mount", "differential_fluid",
+  "transfer_case", "cvt_failure", "hybrid_battery_pack", "hybrid_inverter_coolant_pump", "hybrid_high_voltage_cable", "ev_battery_pack",
+  "ev_charging_port", "ev_onboard_charger", "ev_drive_motor", "dc_dc_converter", "regenerative_braking_fault", "windshield_wiper_motor",
+  "window_regulator", "door_lock_actuator", "sunroof_drain_clog", "exterior_trim_clip",
+];
+
 export function buildPrompt({ year, make, model, trim, problem, stateCode, lang }) {
   const rate = getLaborRate(stateCode);
   const stateName = STATE_NAMES[sanitize(stateCode, 2).toUpperCase()] || "";
@@ -91,6 +123,68 @@ export function buildPrompt({ year, make, model, trim, problem, stateCode, lang 
     "Be SPECIFIC to this exact vehicle — real torque values, real part numbers where you know them, real failure points. " +
     "Avoid generic advice. Respond with ONLY the JSON object — no markdown, no preamble."
   );
+}
+
+const strArr = { type: "array", items: { type: "string" } };
+
+// Tool-use schema: forcing this tool guarantees structured, valid JSON instead
+// of brace-scraping free text, and makes diagnosis_slug + severity first-class
+// required fields (deterministic scoring per benchmarks/SPEC.md section 2).
+export const GUIDE_TOOL = {
+  name: "emit_repair_guide",
+  description: "Return the complete vehicle-specific repair guide as structured data.",
+  input_schema: {
+    type: "object",
+    properties: {
+      overview: { type: "string" },
+      repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
+      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list; use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate" },
+      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
+      difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
+      time: { type: "string" },
+      difficulty_reason: { type: "string" },
+      diagnosis: strArr,
+      cost: {
+        type: "object",
+        properties: {
+          diy_parts: { type: "string" }, tools: { type: "string" }, total_diy: { type: "string" },
+          shop_labor: { type: "string" }, total_shop: { type: "string" }, savings: { type: "string" },
+        },
+      },
+      tools: strArr,
+      parts: strArr,
+      steps: strArr,
+      removal_steps: strArr,
+      installation_steps: strArr,
+      mistakes: strArr,
+      safety: strArr,
+      tips: strArr,
+      when_to_stop: { type: "string" },
+      youtube_searches: strArr,
+    },
+    required: ["overview", "repair_target", "diagnosis_slug", "severity", "difficulty", "cost", "safety"],
+  },
+};
+
+// Single source of truth for the Anthropic request body — used by the handler
+// and by the benchmark harness so both measure the same call.
+export function guideRequest(input) {
+  return {
+    model: resolveModel(),
+    max_tokens: MAX_OUTPUT_TOKENS,
+    tools: [GUIDE_TOOL],
+    tool_choice: { type: "tool", name: GUIDE_TOOL.name },
+    messages: [{ role: "user", content: buildPrompt(input) }],
+  };
+}
+
+// Extract the structured guide from a forced tool_use response.
+export function parseGuide(data) {
+  const blocks = Array.isArray(data?.content) ? data.content : [];
+  const tool = blocks.find(b => b && b.type === "tool_use" && b.name === GUIDE_TOOL.name);
+  const guide = tool && tool.input && typeof tool.input === "object" ? tool.input : null;
+  const stop_reason = data?.stop_reason || null;
+  return { guide, stop_reason, truncated: stop_reason === "max_tokens", usage: data?.usage || null };
 }
 
 // Crude per-IP rate limiting via a Map. For production scale, swap for
@@ -173,8 +267,8 @@ export default async function handler(req) {
     });
   }
 
-  const prompt = buildPrompt({ year, make, model, trim, problem, stateCode, lang });
-  const model_id = resolveModel();
+  const requestBody = guideRequest({ year, make, model, trim, problem, stateCode, lang });
+  const model_id = requestBody.model;
 
   try {
     const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
@@ -184,11 +278,7 @@ export default async function handler(req) {
         "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
       },
-      body: JSON.stringify({
-        model: model_id,
-        max_tokens: MAX_OUTPUT_TOKENS,
-        messages: [{ role: "user", content: prompt }],
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!anthropicResponse.ok) {
@@ -201,28 +291,25 @@ export default async function handler(req) {
     }
 
     const data = await anthropicResponse.json();
-    const blocks = Array.isArray(data?.content) ? data.content : [];
-    const text = blocks
-      .filter(b => b && (b.type === "text" || typeof b.text === "string"))
-      .map(b => b.text || "")
-      .join("\n");
+    const { guide, stop_reason, truncated, usage } = parseGuide(data);
 
-    // Telemetry: a max_tokens stop means the guide was cut off and the client
-    // will discard it as invalid JSON. Surface it instead of failing silently.
-    const truncated = data?.stop_reason === "max_tokens";
+    // Telemetry: a max_tokens stop means the tool call was cut off and the
+    // client will get nothing usable. Surface it instead of failing silently.
     if (truncated) {
       console.warn(
         `[FixCost] truncated response (stop_reason=max_tokens) model=${model_id} ` +
-        `output_tokens=${data?.usage?.output_tokens} — guide likely discarded by client`
+        `output_tokens=${usage?.output_tokens} — guide incomplete`
       );
     }
 
+    // result is a JSON string of the structured guide, backward-compatible with
+    // the client's extractJSON()/jsonToSections() path.
     return new Response(JSON.stringify({
-      result: text,
+      result: guide ? JSON.stringify(guide) : "",
       model: model_id,
-      stop_reason: data?.stop_reason || null,
+      stop_reason,
       truncated,
-      usage: data?.usage || null,
+      usage,
     }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

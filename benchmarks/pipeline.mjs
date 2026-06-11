@@ -2,34 +2,22 @@
 /**
  * Headless wiring of the app's diagnostic pipeline for the benchmark harness.
  *
- * It reuses the PRODUCTION prompt (buildPrompt from api/generate.js) unchanged,
- * then appends a small classification addendum so the model also returns a
- * controlled-vocabulary `diagnosis_slug` and a machine `severity` — the two
- * fields the deterministic scorer needs (SPEC section 2: "mapped to a slug by
- * the app itself; no fuzzy matching in the scorer").
- *
- * It mirrors the app's own extraction logic (extractJSON + validity check), so a
- * truncated/invalid response is treated as a MISS exactly as the app discards it.
- * The client-side templateGuide fallback is intentionally NOT modeled — the
- * harness measures the AI pipeline, which is what Phase 2B optimizes.
+ * It reuses the PRODUCTION request builder (guideRequest from api/generate.js),
+ * which forces the emit_repair_guide tool — so diagnosis_slug and severity come
+ * straight from the app's own structured output (SPEC section 2: "mapped to a
+ * slug by the app itself; no fuzzy matching in the scorer"). The client-side
+ * templateGuide fallback is intentionally NOT modeled; the harness measures the
+ * AI pipeline only.
  *
  * Usage: node pipeline.mjs <case.json>   → prints one normalized JSON object.
- * Reads ANTHROPIC_API_KEY and (optional) ANTHROPIC_MODEL from the environment.
+ * Reads ANTHROPIC_API_KEY and (optional) ANTHROPIC_MODEL / FIXCOST_MAX_TOKENS.
  */
 import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { buildPrompt, resolveModel, MAX_OUTPUT_TOKENS } from "../api/generate.js";
+import { guideRequest, parseGuide, DIAGNOSIS_SLUGS, SEVERITY_LEVELS } from "../api/generate.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const API_KEY = process.env.ANTHROPIC_API_KEY || "";
-const MODEL = resolveModel();
-// Track the production cap so the benchmark measures production; override for A/B.
-const MAX_TOKENS = parseInt(process.env.FIXCOST_MAX_TOKENS || String(MAX_OUTPUT_TOKENS), 10);
-
-const TAXONOMY = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "schema", "diagnosis_taxonomy.json"), "utf8")
-).diagnoses;
+const MAX_TOKENS_OVERRIDE = process.env.FIXCOST_MAX_TOKENS
+  ? parseInt(process.env.FIXCOST_MAX_TOKENS, 10) : null;
 
 // HV / high-voltage safety language detector for the safety-compliance component.
 const HV_RE = /high[\s-]?voltage|\bhv\b|orange cable|orange (?:high[\s-]?voltage )?cable|electric shock|electrocution|de-?energize|service (?:plug|disconnect)|hybrid battery|traction battery|hv battery|isolate the battery|hazardous voltage/i;
@@ -42,18 +30,7 @@ function caseToInput(c) {
   return { year: v.year, make: v.make, model: v.model, trim: "", problem, stateCode: "", lang: "en" };
 }
 
-// Same extraction the app uses (src/App.jsx extractJSON).
-function extractJSON(raw) {
-  if (!raw || typeof raw !== "string") return null;
-  let t = raw.trim().replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/, "").trim();
-  const start = t.indexOf("{"), end = t.lastIndexOf("}");
-  if (start < 0 || end <= start) return null;
-  try { return JSON.parse(t.slice(start, end + 1)); } catch { return null; }
-}
-const valid = (o) => o && typeof o === "object" && !!(o.overview || o.difficulty || o.cost || (Array.isArray(o.steps) && o.steps.length));
-
 function parseCostRange(cost) {
-  // Prefer shop total, then DIY total. Returns [lo, hi] or null.
   const fields = [cost?.total_shop, cost?.total_diy, cost?.shop_labor];
   for (const f of fields) {
     if (typeof f !== "string") continue;
@@ -66,11 +43,11 @@ function parseCostRange(cost) {
 
 function normalizeSeverity(s) {
   const v = String(s || "").toLowerCase().replace(/[\s-]+/g, "_");
-  return ["info", "moderate", "urgent", "do_not_drive"].includes(v) ? v : null;
+  return SEVERITY_LEVELS.includes(v) ? v : null;
 }
 
-function detectSafety(obj) {
-  const hay = JSON.stringify(obj?.safety || []) + " " + (obj?.overview || "") + " " + (obj?.when_to_stop || "");
+function detectSafety(guide) {
+  const hay = JSON.stringify(guide?.safety || []) + " " + (guide?.overview || "") + " " + (guide?.when_to_stop || "");
   return HV_RE.test(hay);
 }
 
@@ -78,10 +55,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504, 529]);
 const RETRYABLE_TYPE = new Set(["overloaded_error", "rate_limit_error", "api_error", "timeout_error"]);
 
-// Call the model with bounded retry on transient network drops / overload.
-// Network-level "fetch failed" and 429/5xx are retried with backoff; a clean
-// API error (e.g. invalid model) is returned immediately, not retried.
-async function callWithRetry(prompt, attempts = 4) {
+// Bounded retry on transient network drops / overload; a clean API error
+// (e.g. invalid model) is returned immediately.
+async function callWithRetry(body, attempts = 4) {
   const backoff = [2000, 5000, 12000];
   let lastErr = null;
   for (let i = 0; i < attempts; i++) {
@@ -89,15 +65,11 @@ async function callWithRetry(prompt, attempts = 4) {
       const r = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
-        body: JSON.stringify({ model: MODEL, max_tokens: MAX_TOKENS, messages: [{ role: "user", content: prompt }] }),
+        body: JSON.stringify(body),
       });
       const data = await r.json();
-      if (data?.error && RETRYABLE_TYPE.has(data.error.type) && i < attempts - 1) {
-        await sleep(backoff[i] || 12000); continue;
-      }
-      if (!r.ok && RETRYABLE_STATUS.has(r.status) && !data?.error && i < attempts - 1) {
-        await sleep(backoff[i] || 12000); continue;
-      }
+      if (data?.error && RETRYABLE_TYPE.has(data.error.type) && i < attempts - 1) { await sleep(backoff[i] || 12000); continue; }
+      if (!r.ok && RETRYABLE_STATUS.has(r.status) && !data?.error && i < attempts - 1) { await sleep(backoff[i] || 12000); continue; }
       return { data, errorMsg: null };
     } catch (e) {
       lastErr = e.message;
@@ -108,48 +80,40 @@ async function callWithRetry(prompt, attempts = 4) {
 }
 
 async function run(caseObj) {
-  const input = caseToInput(caseObj);
-  const basePrompt = buildPrompt(input);
-  const addendum =
-    "\n\nAdditionally, include these two extra top-level JSON keys:\n" +
-    '"diagnosis_slug": choose the SINGLE best-matching slug for the most likely root cause, EXACTLY as written, from this controlled list: ' +
-    TAXONOMY.join(", ") + ". Use \"needs_further_diagnosis\" only if genuinely indeterminate and \"no_fault_found\" if nothing is wrong.\n" +
-    '"severity": one of info | moderate | urgent | do_not_drive.';
-  const prompt = basePrompt + addendum;
+  const body = guideRequest(caseToInput(caseObj));
+  if (MAX_TOKENS_OVERRIDE) body.max_tokens = MAX_TOKENS_OVERRIDE;
+  const model = body.model;
 
   const t0 = Date.now();
-  const { data, errorMsg } = await callWithRetry(prompt);
+  const { data, errorMsg } = await callWithRetry(body);
   const latency_ms = Date.now() - t0;
 
+  const base = {
+    id: caseObj.id, latency_ms, model,
+    diagnosis_slug: null, cost_range_usd: null, severity: null, mentions_safety: false,
+    tokens: (data?.usage?.input_tokens || 0) + (data?.usage?.output_tokens || 0),
+    input_tokens: data?.usage?.input_tokens || 0, output_tokens: data?.usage?.output_tokens || 0,
+    stop_reason: data?.stop_reason || null,
+  };
+
   if (errorMsg || data?.error) {
-    return {
-      id: caseObj.id, ok: false, error: errorMsg || data.error?.message,
-      diagnosis_slug: null, cost_range_usd: null, severity: null, mentions_safety: false,
-      tokens: (data?.usage?.input_tokens || 0) + (data?.usage?.output_tokens || 0),
-      input_tokens: data?.usage?.input_tokens || 0, output_tokens: data?.usage?.output_tokens || 0,
-      latency_ms, stop_reason: data?.stop_reason || null, model: MODEL,
-    };
+    return { ...base, ok: false, error: errorMsg || data.error?.message };
   }
 
-  const text = (data.content || []).filter((b) => b && (b.type === "text" || typeof b.text === "string")).map((b) => b.text || "").join("\n");
-  const obj = extractJSON(text);
-  const isValid = !!valid(obj);
-  const u = data.usage || {};
-
+  const { guide, stop_reason, usage } = parseGuide(data);
+  const isValid = !!(guide && (guide.overview || guide.difficulty || guide.cost));
   return {
-    id: caseObj.id,
+    ...base,
     ok: isValid,
     raw_valid: isValid,
-    diagnosis_slug: isValid && TAXONOMY.includes(obj.diagnosis_slug) ? obj.diagnosis_slug : null,
-    cost_range_usd: isValid ? parseCostRange(obj.cost) : null,
-    severity: isValid ? normalizeSeverity(obj.severity) : null,
-    mentions_safety: isValid ? detectSafety(obj) : false,
-    tokens: (u.input_tokens || 0) + (u.output_tokens || 0),
-    input_tokens: u.input_tokens || 0,
-    output_tokens: u.output_tokens || 0,
-    latency_ms,
-    stop_reason: data.stop_reason || null,
-    model: MODEL,
+    diagnosis_slug: isValid && DIAGNOSIS_SLUGS.includes(guide.diagnosis_slug) ? guide.diagnosis_slug : null,
+    cost_range_usd: isValid ? parseCostRange(guide.cost) : null,
+    severity: isValid ? normalizeSeverity(guide.severity) : null,
+    mentions_safety: isValid ? detectSafety(guide) : false,
+    tokens: (usage?.input_tokens || 0) + (usage?.output_tokens || 0),
+    input_tokens: usage?.input_tokens || 0,
+    output_tokens: usage?.output_tokens || 0,
+    stop_reason,
   };
 }
 
