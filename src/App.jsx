@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, createContext, useContext } from "react";
+import { buildPrompt } from "../shared/guide.js";
 
 const LangCtx = createContext("en");
 const useLang = () => useContext(LangCtx);
@@ -924,34 +925,9 @@ function templateGuide(year, make, model, trim, problem, stateCode, lang) {
 
 async function callAI(year,make,model,trim,problem,stateCode,lang,externalSignal){
   if(_sessionCalls>=SESSION_MAX)throw new Error("session_limit");
-  const rate=getLR(stateCode),sn=getSN(stateCode);
-  const ascii=s=>String(s||"").replace(/[\u2010-\u2015]/g,"-").replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[^\x20-\x7E\n]/g,"");
-  const rLine=rate?(" Location: "+ascii(sanitize(sn,30))+", labor rate $"+rate.lo+"-$"+rate.hi+"/hr."):"";
-  const langInstr=lang==="es"?"\nWRITE ALL STRING VALUES IN SPANISH. Keep JSON keys in English.":"";
-  const trimLine=trim?(" Trim/Engine: "+ascii(sanitize(trim,60))+"."):"";
-
-  const prompt=ascii(
-    "You are a master auto mechanic and ASE-certified technician with 25+ years of hands-on experience. You explain repairs clearly enough that a careful beginner can follow, while including the depth a pro would want.\n\n"+
-    "Vehicle: "+sanitize(year,4)+" "+sanitize(make,30)+" "+sanitize(model,MAX_MODEL)+trimLine+"\n"+
-    "Problem: "+sanitize(problem,MAX_PROBLEM)+rLine+langInstr+"\n\n"+
-    "Generate a thorough, vehicle-specific repair guide as a JSON object. Use the trim/engine info to give exact torque specs, fluid types/capacities, common failure points, and known issues for THIS engine. Format:\n"+
-    "{\"overview\":\"2-3 sentences: what's likely wrong, the most probable root cause for THIS vehicle, and what the repair involves\","+
-    "\"repair_target\":\"the SINGLE most likely specific part or repair in short searchable terms — e.g. 'front sway bar end links', 'front brake pads and rotors', 'alternator', 'ignition coil'. This drives parts/forum/video searches, so be precise.\","+
-    "\"difficulty\":\"Beginner|Intermediate|Advanced\",\"time\":\"realistic range e.g. 2-4 hours\",\"difficulty_reason\":\"1 sentence explaining the rating\","+
-    "\"diagnosis\":[\"3-5 ordered steps to CONFIRM the root cause before buying parts — specific tests, what confirms/rules out each cause, which OBD-II codes matter for this engine\"],"+
-    "\"cost\":{\"diy_parts\":\"$X-$Y\",\"tools\":\"$X-$Y\",\"total_diy\":\"$X-$Y\",\"shop_labor\":\"$X-$Y"+(rate?" at $"+rate.lo+"-$"+rate.hi+"/hr":"")+"\",\"total_shop\":\"$X-$Y\",\"savings\":\"$X-$Y\"},"+
-    "\"tools\":[\"each tool WITH the specific size/spec needed, e.g. '10mm + 13mm sockets', 'torque wrench (10-100 ft-lb)'\"],"+
-    "\"parts\":[\"each part with OEM vs aftermarket note and a rough price, e.g. 'Front sway bar end links (Moog K80xxx, ~$25-50/pair)'\"],"+
-    "\"steps\":[\"ONLY for a diagnostic-only fix with no part to replace; otherwise omit this key and use removal_steps + installation_steps instead. Never produce both.\"],"+
-    "\"removal_steps\":[\"4-8 short bullet steps to REMOVE the failed part. Each 1-2 sentences: the action plus the exact torque/measurement or a step-specific warning.\"],"+
-    "\"installation_steps\":[\"4-8 short bullet steps to INSTALL the new part and VERIFY the fix — include torque specs, any reset/relearn procedure, and the final test-drive/confirmation step.\"],"+
-    "\"mistakes\":[\"3-5 mistakes UNIQUE to this make/model/year — known failure points, model-specific gotchas, year-range recalls/TSBs, what people commonly get wrong on THIS engine\"],"+
-    "\"safety\":[\"4-6 safety warnings, including model-specific ones (electronic parking brake service mode, battery registration, hybrid high-voltage precautions, refrigerant type, etc.)\"],"+
-    "\"tips\":[\"2-3 pro tips that make the job easier or prevent comebacks — torque sequences, penetrating-oil soak times, alignment notes, reset/relearn procedures\"],"+
-    "\"when_to_stop\":\"1-2 sentences: the specific signs that mean this is beyond a DIY repair and should go to a professional\","+
-    "\"youtube_searches\":[\"3-4 search terms tuned to THIS exact vehicle and repair\"]}\n\n"+
-    "Be SPECIFIC to this exact vehicle — real torque values, real part numbers where you know them, real failure points. Avoid generic advice that applies to any car. Respond with ONLY the JSON object — no markdown, no preamble."
-  );
+  // Canonical prompt lives in shared/guide.js (single source of truth shared
+  // with the server edge function and the benchmark harness).
+  const prompt = buildPrompt({ year, make, model, trim, problem, stateCode, lang });
 
   const extractJSON=(raw)=>{
     if(!raw||typeof raw!=="string")return null;
