@@ -1,19 +1,19 @@
 {
-  "git_sha": "6997a8efe49dd68b8e762c04f4b3aea0d02cc0cf",
+  "git_sha": "09859e1dade310f837fd48cc3d934590d546e83a",
   "benchmark_version": 1,
   "frozen_at": "20260611T151332Z",
   "token_baseline": 5715,
-  "notes": "Promoted after Phase 2B items a-d (Kai-approved). Train metrics from the f6db9bb run (item d verified byte-identical, heldout-case commit does not touch the pipeline); heldout from the first heldout baseline at 6997a8e.",
+  "notes": "Train metrics re-baselined on the Kai-approved 25-case split (run 20260611T224141Z). Heldout metrics carried from the 6997a8e baseline \u2014 no measured-path code changed between 6997a8e and 09859e1 (only case files and optimize/ scaffolding). token_baseline unchanged (frozen at harness creation).",
   "metrics": {
     "train": {
-      "n_cases": 10,
-      "mean_score": 88.5,
+      "n_cases": 25,
+      "mean_score": 89.84,
       "safety_violations": 0,
-      "mean_latency_s": 88.38,
-      "mean_tokens": 6632.2,
-      "mean_input_tokens": 3060.5,
-      "mean_output_tokens": 3571.7,
-      "mean_cost_usd": 0.0628,
+      "mean_latency_s": 178.58,
+      "mean_tokens": 6649.5,
+      "mean_input_tokens": 3061.0,
+      "mean_output_tokens": 3588.4,
+      "mean_cost_usd": 0.063,
       "council_agreement_rate": null,
       "valid_response_rate": 1.0
     },
