@@ -138,7 +138,7 @@ export const GUIDE_TOOL = {
     properties: {
       overview: { type: "string" },
       repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
-      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list; use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate" },
+      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate." },
       severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
       difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
       time: { type: "string" },
