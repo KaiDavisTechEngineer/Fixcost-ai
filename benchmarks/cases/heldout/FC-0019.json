@@ -1,0 +1,42 @@
+{
+  "id": "FC-0019",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "BMW",
+    "model": "3 Series",
+    "powertrain": "gas",
+    "mileage": 101000
+  },
+  "complaint": "Check engine light on, rough idle that smooths out at speed, and a slight hiss from the engine bay.",
+  "observations": [
+    "Lean-condition code stored",
+    "Idle hunts up and down",
+    "Hiss changes with RPM"
+  ],
+  "dtc_codes": [
+    "P0171"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "vacuum_leak",
+    "acceptable_diagnoses": [
+      "vacuum_leak",
+      "intake_manifold_gasket",
+      "pcv_valve"
+    ],
+    "wrong_but_plausible": [
+      "mass_air_flow_sensor",
+      "oxygen_sensor_upstream"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      50,
+      400
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "engine",
+    "dtc"
+  ]
+}

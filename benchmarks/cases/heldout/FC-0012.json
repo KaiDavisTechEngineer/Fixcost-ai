@@ -1,0 +1,40 @@
+{
+  "id": "FC-0012",
+  "version": 1,
+  "vehicle": {
+    "year": 2019,
+    "make": "Nissan",
+    "model": "Leaf",
+    "powertrain": "ev",
+    "mileage": 52000
+  },
+  "complaint": "Car won't accept a charge at home or public stations; charge-port light flashes and charging never starts.",
+  "observations": [
+    "No charging on Level 1 or Level 2",
+    "Charge-port latch feels loose",
+    "12V systems and dash work normally"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "ev_charging_port",
+    "acceptable_diagnoses": [
+      "ev_charging_port",
+      "ev_onboard_charger"
+    ],
+    "wrong_but_plausible": [
+      "dc_dc_converter",
+      "ev_battery_pack"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      300,
+      1500
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "ev",
+    "high_voltage",
+    "charging"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "FC-0018",
+  "version": 1,
+  "vehicle": {
+    "year": 2013,
+    "make": "Volkswagen",
+    "model": "Jetta",
+    "powertrain": "gas",
+    "mileage": 145000
+  },
+  "complaint": "White sweet-smelling smoke from the exhaust, coolant disappearing with no visible leak, and the engine overheats.",
+  "observations": [
+    "Coolant level drops with no external puddle",
+    "White smoke at idle and acceleration",
+    "Milky residue under the oil cap"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "head_gasket_coolant_loss",
+    "acceptable_diagnoses": [
+      "head_gasket_coolant_loss",
+      "head_gasket"
+    ],
+    "wrong_but_plausible": [
+      "coolant_leak",
+      "radiator_hose_leak"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      800,
+      2500
+    ],
+    "severity": "do_not_drive"
+  },
+  "tags": [
+    "engine",
+    "cooling",
+    "do_not_drive"
+  ]
+}

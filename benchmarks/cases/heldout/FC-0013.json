@@ -1,0 +1,42 @@
+{
+  "id": "FC-0013",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "Ford",
+    "model": "Escape Hybrid",
+    "powertrain": "hybrid",
+    "mileage": 139000
+  },
+  "complaint": "Hybrid-system warning and the car overheated in stop-and-go traffic, then dropped to reduced power.",
+  "observations": [
+    "Inverter coolant reservoir is low",
+    "Electric auxiliary pump is silent when it should run",
+    "Problem worsens at low speed"
+  ],
+  "dtc_codes": [
+    "P0A93"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "hybrid_inverter_coolant_pump",
+    "acceptable_diagnoses": [
+      "hybrid_inverter_coolant_pump"
+    ],
+    "wrong_but_plausible": [
+      "hybrid_battery_pack",
+      "thermostat"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      200,
+      800
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "hybrid",
+    "high_voltage",
+    "cooling",
+    "dtc"
+  ]
+}

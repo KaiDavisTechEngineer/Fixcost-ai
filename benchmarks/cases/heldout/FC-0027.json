@@ -1,0 +1,39 @@
+{
+  "id": "FC-0027",
+  "version": 1,
+  "vehicle": {
+    "year": 2015,
+    "make": "Hyundai",
+    "model": "Sonata",
+    "powertrain": "gas",
+    "mileage": 96000
+  },
+  "complaint": "Knocking/clunking from the front when going over bumps or rough roads, but the car drives and steers fine.",
+  "observations": [
+    "Clunk worst over speed bumps",
+    "No looseness in the steering wheel",
+    "Tire wear looks even"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "sway_bar_end_link",
+    "acceptable_diagnoses": [
+      "sway_bar_end_link",
+      "sway_bar_bushing"
+    ],
+    "wrong_but_plausible": [
+      "strut_mount",
+      "control_arm_bushing"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      80,
+      300
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "suspension",
+    "noise"
+  ]
+}

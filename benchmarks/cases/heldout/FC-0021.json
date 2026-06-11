@@ -1,0 +1,42 @@
+{
+  "id": "FC-0021",
+  "version": 1,
+  "vehicle": {
+    "year": 2016,
+    "make": "GMC",
+    "model": "Sierra",
+    "powertrain": "gas",
+    "mileage": 113000
+  },
+  "complaint": "Check engine light is flashing, truck shakes and stumbles under load, and fuel economy is down.",
+  "observations": [
+    "Random/multiple-cylinder misfire code",
+    "Worse under acceleration",
+    "Plugs are at original mileage"
+  ],
+  "dtc_codes": [
+    "P0300"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "spark_plugs",
+    "acceptable_diagnoses": [
+      "spark_plugs",
+      "ignition_coil"
+    ],
+    "wrong_but_plausible": [
+      "fuel_injector",
+      "vacuum_leak"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      500
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "engine",
+    "misfire",
+    "dtc"
+  ]
+}

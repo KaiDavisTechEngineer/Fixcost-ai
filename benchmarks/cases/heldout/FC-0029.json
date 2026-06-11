@@ -1,0 +1,39 @@
+{
+  "id": "FC-0029",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "Honda",
+    "model": "Odyssey",
+    "powertrain": "gas",
+    "mileage": 147000
+  },
+  "complaint": "Clicking or popping sound from the front when turning, especially in tight turns at low speed.",
+  "observations": [
+    "Click only while turning, gone when straight",
+    "Worse turning left",
+    "Torn axle boot with grease slung around"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "cv_axle",
+    "acceptable_diagnoses": [
+      "cv_axle",
+      "cv_joint"
+    ],
+    "wrong_but_plausible": [
+      "wheel_bearing_front",
+      "tie_rod_end"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      500
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "drivetrain",
+    "noise"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "FC-0015",
+  "version": 1,
+  "vehicle": {
+    "year": 2019,
+    "make": "Mazda",
+    "model": "CX-5",
+    "powertrain": "gas",
+    "mileage": 47000
+  },
+  "complaint": "Occasional faint odor through the vents that comes and goes; can't reproduce it and there are no warnings.",
+  "observations": [
+    "Smell only sometimes on first startup",
+    "No fluid leaks found",
+    "Cabin and engine temps normal"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "no_fault_found",
+    "acceptable_diagnoses": [
+      "no_fault_found",
+      "needs_further_diagnosis"
+    ],
+    "wrong_but_plausible": [
+      "heater_core",
+      "cabin_air_filter"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      0,
+      120
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "monitor",
+    "hvac",
+    "over_diagnosis"
+  ]
+}

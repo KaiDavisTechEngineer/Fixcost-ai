@@ -1,0 +1,39 @@
+{
+  "id": "FC-0022",
+  "version": 1,
+  "vehicle": {
+    "year": 2015,
+    "make": "Honda",
+    "model": "Pilot",
+    "powertrain": "gas",
+    "mileage": 134000
+  },
+  "complaint": "AC blows warm — I added a can of refrigerant and it worked for a day, then went warm again.",
+  "observations": [
+    "Compressor clutch not engaging when AC is on",
+    "System briefly cold after a recharge",
+    "Clicking from the compressor area"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "ac_compressor",
+    "acceptable_diagnoses": [
+      "ac_compressor",
+      "ac_clutch"
+    ],
+    "wrong_but_plausible": [
+      "ac_refrigerant_low",
+      "ac_condenser"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      600,
+      1400
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "hvac",
+    "adversarial"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "FC-0025",
+  "version": 1,
+  "vehicle": {
+    "year": 2016,
+    "make": "Ford",
+    "model": "Explorer",
+    "powertrain": "gas",
+    "mileage": 118000
+  },
+  "complaint": "Transmission feels like it's slipping and shifts are harsh — a shop quoted me for a rebuild.",
+  "observations": [
+    "Transmission fluid is low and smells slightly burnt",
+    "Slipping worse when warm",
+    "No internal noises or metal in the pan"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "transmission_fluid_low",
+    "acceptable_diagnoses": [
+      "transmission_fluid_low"
+    ],
+    "wrong_but_plausible": [
+      "transmission_slipping",
+      "torque_converter"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      100,
+      400
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "transmission",
+    "adversarial"
+  ]
+}

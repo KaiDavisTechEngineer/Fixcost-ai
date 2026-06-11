@@ -1,0 +1,39 @@
+{
+  "id": "FC-0030",
+  "version": 1,
+  "vehicle": {
+    "year": 2015,
+    "make": "Lexus",
+    "model": "RX",
+    "powertrain": "gas",
+    "mileage": 84000
+  },
+  "complaint": "Loud squeal from the engine on cold startup and when turning the wheel or switching on the AC; fades after a minute.",
+  "observations": [
+    "Squeal worst on cold mornings",
+    "Belt looks glazed and cracked",
+    "Noise changes with engine load"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "serpentine_belt",
+    "acceptable_diagnoses": [
+      "serpentine_belt",
+      "belt_tensioner"
+    ],
+    "wrong_but_plausible": [
+      "idler_pulley",
+      "power_steering_pump"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      80,
+      300
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "engine",
+    "noise"
+  ]
+}

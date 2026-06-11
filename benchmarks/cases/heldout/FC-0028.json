@@ -1,0 +1,38 @@
+{
+  "id": "FC-0028",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "Chevy",
+    "model": "Equinox",
+    "powertrain": "gas",
+    "mileage": 131000
+  },
+  "complaint": "Temperature gauge climbs higher than normal in traffic and the heater blows cold sometimes, but no coolant is leaking.",
+  "observations": [
+    "Coolant level is full",
+    "Upper radiator hose stays cool when warming up",
+    "Temp drops on the highway"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "thermostat",
+    "acceptable_diagnoses": [
+      "thermostat",
+      "coolant_temp_sensor"
+    ],
+    "wrong_but_plausible": [
+      "water_pump",
+      "radiator_fan_motor"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      120,
+      400
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "cooling"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "FC-0020",
+  "version": 1,
+  "vehicle": {
+    "year": 2017,
+    "make": "Kia",
+    "model": "Sorento",
+    "powertrain": "gas",
+    "mileage": 76000
+  },
+  "complaint": "Check engine light with a rattle from the top of the engine on cold startup that quiets after a few seconds.",
+  "observations": [
+    "Timing/VVT-related code stored",
+    "Rattle only on cold start",
+    "Oil level and condition are good"
+  ],
+  "dtc_codes": [
+    "P0011"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "variable_valve_timing_solenoid",
+    "acceptable_diagnoses": [
+      "variable_valve_timing_solenoid",
+      "timing_chain"
+    ],
+    "wrong_but_plausible": [
+      "low_oil_pressure",
+      "camshaft_position_sensor"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      600
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "engine",
+    "dtc"
+  ]
+}

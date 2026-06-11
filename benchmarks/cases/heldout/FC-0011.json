@@ -1,0 +1,43 @@
+{
+  "id": "FC-0011",
+  "version": 1,
+  "vehicle": {
+    "year": 2012,
+    "make": "Toyota",
+    "model": "Prius",
+    "powertrain": "hybrid",
+    "mileage": 168000
+  },
+  "complaint": "Dashboard hybrid-system warning and red triangle; reduced power and the high-voltage battery gauge swings wildly.",
+  "observations": [
+    "Fuel economy dropped sharply",
+    "Warning returns after each restart",
+    "Stored code points to a hybrid battery block voltage problem"
+  ],
+  "dtc_codes": [
+    "P0A80"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "hybrid_battery_pack",
+    "acceptable_diagnoses": [
+      "hybrid_battery_pack",
+      "hybrid_high_voltage_cable"
+    ],
+    "wrong_but_plausible": [
+      "dc_dc_converter",
+      "ev_battery_pack"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      1500,
+      4000
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "hybrid",
+    "high_voltage",
+    "electrical",
+    "dtc"
+  ]
+}

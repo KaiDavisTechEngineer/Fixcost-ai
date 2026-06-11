@@ -1,0 +1,39 @@
+{
+  "id": "FC-0024",
+  "version": 1,
+  "vehicle": {
+    "year": 2018,
+    "make": "Chrysler",
+    "model": "Pacifica",
+    "powertrain": "gas",
+    "mileage": 71000
+  },
+  "complaint": "Sweet coolant smell inside the cabin and the windshield fogs up with an oily film; coolant is slowly disappearing.",
+  "observations": [
+    "Damp passenger floor carpet",
+    "No external coolant leak found",
+    "Fog returns when the heater is on"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "heater_core",
+    "acceptable_diagnoses": [
+      "heater_core"
+    ],
+    "wrong_but_plausible": [
+      "coolant_leak",
+      "radiator_hose_leak"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      400,
+      1200
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "cooling",
+    "hvac",
+    "adversarial"
+  ]
+}

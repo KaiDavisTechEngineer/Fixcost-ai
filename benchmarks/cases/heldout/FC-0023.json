@@ -1,0 +1,40 @@
+{
+  "id": "FC-0023",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "Hyundai",
+    "model": "Santa Fe",
+    "powertrain": "gas",
+    "mileage": 128000
+  },
+  "complaint": "Car won't start — just a single click when I turn the key. I already replaced the battery and it still clicks.",
+  "observations": [
+    "Headlights and dash are bright and strong",
+    "New battery tests good",
+    "Single loud click from the starter when cranking"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "starter_motor",
+    "acceptable_diagnoses": [
+      "starter_motor",
+      "starter_solenoid"
+    ],
+    "wrong_but_plausible": [
+      "battery_dead",
+      "battery_weak"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      250,
+      600
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "electrical",
+    "no_start",
+    "adversarial"
+  ]
+}

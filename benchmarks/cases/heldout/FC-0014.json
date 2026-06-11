@@ -1,0 +1,39 @@
+{
+  "id": "FC-0014",
+  "version": 1,
+  "vehicle": {
+    "year": 2017,
+    "make": "Subaru",
+    "model": "Outback",
+    "powertrain": "gas",
+    "mileage": 88000
+  },
+  "complaint": "A warning light flickered once for a second then went away; everything seems normal and no codes are stored now.",
+  "observations": [
+    "No drivability issues",
+    "Light has not returned in two weeks",
+    "No stored or pending codes on a scan"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "no_fault_found",
+    "acceptable_diagnoses": [
+      "no_fault_found",
+      "needs_further_diagnosis"
+    ],
+    "wrong_but_plausible": [
+      "oxygen_sensor_downstream",
+      "mass_air_flow_sensor"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      0,
+      150
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "monitor",
+    "over_diagnosis"
+  ]
+}

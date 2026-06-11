@@ -1,0 +1,38 @@
+{
+  "id": "FC-0026",
+  "version": 1,
+  "vehicle": {
+    "year": 2013,
+    "make": "Acura",
+    "model": "MDX",
+    "powertrain": "gas",
+    "mileage": 142000
+  },
+  "complaint": "Loud power-steering whine and a groan when turning; a mechanic said I need a new pump.",
+  "observations": [
+    "Power-steering reservoir is low",
+    "Whine quiets right after topping off the fluid",
+    "Wet residue on the pressure hose"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "power_steering_fluid_leak",
+    "acceptable_diagnoses": [
+      "power_steering_fluid_leak"
+    ],
+    "wrong_but_plausible": [
+      "power_steering_pump",
+      "steering_rack"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      120,
+      600
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "steering",
+    "adversarial"
+  ]
+}
