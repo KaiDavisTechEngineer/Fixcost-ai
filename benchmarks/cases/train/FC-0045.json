@@ -1,0 +1,39 @@
+{
+  "id": "FC-0045",
+  "version": 1,
+  "vehicle": {
+    "year": 2013,
+    "make": "Dodge",
+    "model": "Journey",
+    "powertrain": "gas",
+    "mileage": 149000
+  },
+  "complaint": "Oil light flickers at stoplights when the engine is fully warmed up, but goes out as soon as I rev it. Probably just a sensor acting up?",
+  "observations": [
+    "Oil level is full and the oil was changed recently",
+    "Faint ticking from the top of the engine at hot idle",
+    "A mechanical gauge test shows pressure below spec at hot idle"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "low_oil_pressure",
+    "acceptable_diagnoses": [
+      "low_oil_pressure"
+    ],
+    "wrong_but_plausible": [
+      "oil_leak_oil_pan_gasket",
+      "oil_consumption_piston_rings"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      300,
+      2500
+    ],
+    "severity": "do_not_drive"
+  },
+  "tags": [
+    "engine",
+    "safety_critical",
+    "severity_calibration"
+  ]
+}

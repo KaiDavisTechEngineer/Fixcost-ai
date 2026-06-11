@@ -1,0 +1,38 @@
+{
+  "id": "FC-0034",
+  "version": 1,
+  "vehicle": {
+    "year": 2021,
+    "make": "Subaru",
+    "model": "Forester",
+    "powertrain": "gas",
+    "mileage": 38000
+  },
+  "complaint": "Tire pressure warning light came on right after I got new tires installed and it won't go away.",
+  "observations": [
+    "All four pressures verified at the door-jamb spec with a quality gauge",
+    "Light came on the day of the tire swap and has stayed on for two weeks",
+    "No handling or ride changes"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "tpms_sensor",
+    "acceptable_diagnoses": [
+      "tpms_sensor"
+    ],
+    "wrong_but_plausible": [
+      "tire_pressure_low"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      50,
+      250
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "tires",
+    "electrical",
+    "severity_calibration"
+  ]
+}

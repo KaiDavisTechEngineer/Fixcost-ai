@@ -1,0 +1,38 @@
+{
+  "id": "FC-0038",
+  "version": 1,
+  "vehicle": {
+    "year": 2017,
+    "make": "Kia",
+    "model": "Soul",
+    "powertrain": "gas",
+    "mileage": 78000
+  },
+  "complaint": "Engine cranks slowly on cold mornings before starting — takes a second or two longer than it used to.",
+  "observations": [
+    "Always starts eventually, even on the coldest mornings",
+    "Battery is the factory original at 5+ years old",
+    "Load test shows the battery at the low edge of the passing range"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "battery_weak",
+    "acceptable_diagnoses": [
+      "battery_weak"
+    ],
+    "wrong_but_plausible": [
+      "starter_motor",
+      "alternator"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      120,
+      300
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "electrical",
+    "severity_calibration"
+  ]
+}

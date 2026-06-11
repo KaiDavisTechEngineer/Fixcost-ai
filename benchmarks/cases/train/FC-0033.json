@@ -1,0 +1,38 @@
+{
+  "id": "FC-0033",
+  "version": 1,
+  "vehicle": {
+    "year": 2015,
+    "make": "Ford",
+    "model": "Fusion",
+    "powertrain": "gas",
+    "mileage": 110000
+  },
+  "complaint": "Heater fan stopped working on the lower speeds — it only blows on the highest setting now.",
+  "observations": [
+    "Speeds 1 through 3 produce no airflow at all",
+    "Speed 4 works normally with full heat and AC",
+    "Started suddenly, no burning smell"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "blower_motor_resistor",
+    "acceptable_diagnoses": [
+      "blower_motor_resistor"
+    ],
+    "wrong_but_plausible": [
+      "blower_motor"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      50,
+      200
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "hvac",
+    "electrical",
+    "severity_calibration"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "FC-0043",
+  "version": 1,
+  "vehicle": {
+    "year": 2009,
+    "make": "Chevy",
+    "model": "Silverado",
+    "powertrain": "gas",
+    "mileage": 187000
+  },
+  "complaint": "Brake pedal has gotten a little spongy lately — probably just needs new pads soon?",
+  "observations": [
+    "Brake fluid level has dropped twice after topping off",
+    "Heavy rust flaking visible on the steel brake lines along the frame",
+    "One damp spot on a line near the rear axle"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "brake_line_corroded",
+    "acceptable_diagnoses": [
+      "brake_line_corroded",
+      "brake_fluid_leak"
+    ],
+    "wrong_but_plausible": [
+      "brake_master_cylinder",
+      "brake_pads_rear"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      200,
+      800
+    ],
+    "severity": "do_not_drive"
+  },
+  "tags": [
+    "brakes",
+    "safety_critical",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

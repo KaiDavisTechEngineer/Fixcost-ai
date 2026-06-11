@@ -1,0 +1,40 @@
+{
+  "id": "FC-0044",
+  "version": 1,
+  "vehicle": {
+    "year": 2022,
+    "make": "Mazda",
+    "model": "CX-30",
+    "powertrain": "gas",
+    "mileage": 19000
+  },
+  "complaint": "Noticed a small bubble on the side of my front tire after hitting a pothole last week. Car drives perfectly normal — is this anything?",
+  "observations": [
+    "Egg-sized bulge on the sidewall of the front right tire",
+    "No vibration or pulling at any speed",
+    "Tread depth is nearly new across all tires"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "tire_sidewall_damage",
+    "acceptable_diagnoses": [
+      "tire_sidewall_damage"
+    ],
+    "wrong_but_plausible": [
+      "tire_puncture",
+      "wheel_balance"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      100,
+      350
+    ],
+    "severity": "do_not_drive"
+  },
+  "tags": [
+    "tires",
+    "safety_critical",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

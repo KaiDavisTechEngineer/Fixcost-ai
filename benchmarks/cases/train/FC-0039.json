@@ -1,0 +1,38 @@
+{
+  "id": "FC-0039",
+  "version": 1,
+  "vehicle": {
+    "year": 2012,
+    "make": "Honda",
+    "model": "CR-V",
+    "powertrain": "gas",
+    "mileage": 156000
+  },
+  "complaint": "Heard a loud bang from the front left while parking, and now that corner of the car sits visibly lower and clunks over bumps.",
+  "observations": [
+    "Front left ride height about an inch lower than the right",
+    "Metallic clunk over every bump from that corner",
+    "Piece of curled metal visible through the wheel well"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "coil_spring_broken",
+    "acceptable_diagnoses": [
+      "coil_spring_broken"
+    ],
+    "wrong_but_plausible": [
+      "strut_assembly",
+      "sway_bar_end_link"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      250,
+      700
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "suspension",
+    "severity_calibration"
+  ]
+}

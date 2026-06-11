@@ -1,0 +1,42 @@
+{
+  "id": "FC-0031",
+  "version": 1,
+  "vehicle": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "RAV4",
+    "powertrain": "gas",
+    "mileage": 58000
+  },
+  "complaint": "Horrible grinding from the brakes first thing every morning — sounds like metal on metal, I'm afraid to drive it.",
+  "observations": [
+    "Grinding only for the first few stops after the car sits overnight, then completely gone",
+    "Worse after rain or washing the car",
+    "Pads measured at 8mm at the last service a month ago"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "no_fault_found",
+    "acceptable_diagnoses": [
+      "no_fault_found",
+      "needs_further_diagnosis"
+    ],
+    "wrong_but_plausible": [
+      "brake_pads_front",
+      "brake_rotors_front"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      0,
+      100
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "brakes",
+    "monitor",
+    "over_diagnosis",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

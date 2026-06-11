@@ -1,0 +1,42 @@
+{
+  "id": "FC-0035",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "Nissan",
+    "model": "Pathfinder",
+    "powertrain": "gas",
+    "mileage": 121000
+  },
+  "complaint": "Check engine light says ENGINE KNOCK detected — is my engine about to blow up?",
+  "observations": [
+    "Knock sensor circuit code stored",
+    "Engine runs completely smooth with normal power and no audible knocking",
+    "Fuel economy unchanged"
+  ],
+  "dtc_codes": [
+    "P0325"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "knock_sensor",
+    "acceptable_diagnoses": [
+      "knock_sensor"
+    ],
+    "wrong_but_plausible": [
+      "engine_misfire",
+      "low_oil_pressure"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      450
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "engine",
+    "dtc",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

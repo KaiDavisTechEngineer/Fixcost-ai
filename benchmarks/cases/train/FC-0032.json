@@ -1,0 +1,42 @@
+{
+  "id": "FC-0032",
+  "version": 1,
+  "vehicle": {
+    "year": 2016,
+    "make": "Honda",
+    "model": "Accord",
+    "powertrain": "gas",
+    "mileage": 92000
+  },
+  "complaint": "My engine is burning oil — the dipstick was half a quart down when I checked. Do I need new piston rings?",
+  "observations": [
+    "About half a quart consumed over 6,000 miles since the last oil change",
+    "No smoke from the exhaust at startup or under load",
+    "No drips on the driveway, no oil smell"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "no_fault_found",
+    "acceptable_diagnoses": [
+      "no_fault_found",
+      "needs_further_diagnosis"
+    ],
+    "wrong_but_plausible": [
+      "oil_consumption_piston_rings",
+      "valve_cover_gasket_leak"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      0,
+      80
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "engine",
+    "monitor",
+    "over_diagnosis",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

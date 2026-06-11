@@ -1,0 +1,40 @@
+{
+  "id": "FC-0041",
+  "version": 1,
+  "vehicle": {
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Prius",
+    "powertrain": "hybrid",
+    "mileage": 96000
+  },
+  "complaint": "Found a rodent nest under the hood and some chewed wiring — including what looks like nibbles on the thick orange cable. Hybrid warning light is now on.",
+  "observations": [
+    "Orange high-voltage cable insulation visibly damaged in one spot",
+    "Hybrid system warning illuminated after the discovery",
+    "Car still drives but with intermittent warning chimes"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "hybrid_high_voltage_cable",
+    "acceptable_diagnoses": [
+      "hybrid_high_voltage_cable"
+    ],
+    "wrong_but_plausible": [
+      "hybrid_battery_pack",
+      "wiring_harness_chafe"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      500,
+      2000
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "hybrid",
+    "high_voltage",
+    "electrical",
+    "severity_calibration"
+  ]
+}

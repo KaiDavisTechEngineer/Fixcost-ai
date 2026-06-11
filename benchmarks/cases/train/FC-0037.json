@@ -1,0 +1,41 @@
+{
+  "id": "FC-0037",
+  "version": 1,
+  "vehicle": {
+    "year": 2020,
+    "make": "Hyundai",
+    "model": "Kona",
+    "powertrain": "ev",
+    "mileage": 41000
+  },
+  "complaint": "My EV's 12-volt battery keeps dying — I've jumped it three times this month. The main battery shows plenty of charge.",
+  "observations": [
+    "Once jumped, everything works and the car drives normally",
+    "New 12V battery installed last month, died again",
+    "High-voltage pack state of charge is normal"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "dc_dc_converter",
+    "acceptable_diagnoses": [
+      "dc_dc_converter"
+    ],
+    "wrong_but_plausible": [
+      "battery_dead",
+      "parasitic_draw"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      400,
+      1500
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "ev",
+    "high_voltage",
+    "electrical",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

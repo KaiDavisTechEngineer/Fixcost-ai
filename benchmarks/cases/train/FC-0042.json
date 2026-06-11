@@ -1,0 +1,40 @@
+{
+  "id": "FC-0042",
+  "version": 1,
+  "vehicle": {
+    "year": 2018,
+    "make": "Toyota",
+    "model": "Camry",
+    "powertrain": "hybrid",
+    "mileage": 87000
+  },
+  "complaint": "Brake pedal on my hybrid feels inconsistent — sometimes grabby, sometimes weak — and the brake system warning light flashes on and off.",
+  "observations": [
+    "Pedal feel changes between stops, especially at low speed",
+    "Brake and hybrid system warning lights intermittent",
+    "Regenerative braking indicator behaves erratically on the dash"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "regenerative_braking_fault",
+    "acceptable_diagnoses": [
+      "regenerative_braking_fault"
+    ],
+    "wrong_but_plausible": [
+      "brake_pads_front",
+      "abs_module"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      300,
+      1500
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "hybrid",
+    "high_voltage",
+    "brakes",
+    "severity_calibration"
+  ]
+}

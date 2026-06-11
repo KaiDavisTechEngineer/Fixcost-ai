@@ -1,0 +1,41 @@
+{
+  "id": "FC-0036",
+  "version": 1,
+  "vehicle": {
+    "year": 2013,
+    "make": "Hyundai",
+    "model": "Elantra",
+    "powertrain": "gas",
+    "mileage": 138000
+  },
+  "complaint": "Check engine light on with a catalyst efficiency code — the car drives totally fine.",
+  "observations": [
+    "Catalyst-below-threshold code stored, returns after clearing",
+    "No power loss, no smell, passes a visual exhaust inspection",
+    "Upstream O2 readings switch normally on a scan tool"
+  ],
+  "dtc_codes": [
+    "P0420"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "catalytic_converter",
+    "acceptable_diagnoses": [
+      "catalytic_converter",
+      "oxygen_sensor_downstream"
+    ],
+    "wrong_but_plausible": [
+      "oxygen_sensor_upstream"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      800,
+      2200
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "emissions",
+    "dtc",
+    "severity_calibration"
+  ]
+}

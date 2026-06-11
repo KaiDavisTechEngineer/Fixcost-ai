@@ -1,0 +1,41 @@
+{
+  "id": "FC-0040",
+  "version": 1,
+  "vehicle": {
+    "year": 2015,
+    "make": "Audi",
+    "model": "A4",
+    "powertrain": "gas",
+    "mileage": 117000
+  },
+  "complaint": "Rattle from the engine for a few seconds on cold start that goes away — it's been doing it for weeks so it's probably nothing, right?",
+  "observations": [
+    "Rattle is loudest in the first 2-3 seconds after a cold start",
+    "Cam/crank correlation code now stored",
+    "Rattle duration has been slowly getting longer"
+  ],
+  "dtc_codes": [
+    "P0016"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "timing_chain",
+    "acceptable_diagnoses": [
+      "timing_chain"
+    ],
+    "wrong_but_plausible": [
+      "variable_valve_timing_solenoid",
+      "belt_tensioner"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      800,
+      2500
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "engine",
+    "dtc",
+    "severity_calibration"
+  ]
+}
