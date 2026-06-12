@@ -145,21 +145,14 @@ def test_protected_invariants_match_real_file():
     assert check_protected_invariants(repo_root, PROTECTED_INVARIANTS) == []
 
 
-def test_attempt2_seed_proposal_still_applies():
-    """The session-3 near-miss proposal is queued for a seeded retest; its
-    edits must still validate against shared/guide.js. The suite also runs
-    inside verifier worktrees where a proposal is ALREADY applied — there the
-    'old' text is legitimately gone, so accept either state (this exact test
-    once failed in-worktree and bricked gate cond1 for a whole session)."""
-    import json
-    repo_root = Path(__file__).resolve().parents[2]
-    seed = repo_root / "benchmarks/results/proposals/20260611T224336Z/attempt2/proposal.json"
-    proposal = json.loads(seed.read_text())
-    errors = validate_proposal(proposal, repo_root)
-    if errors:
-        applied = all(e["new"] in (repo_root / e["file"]).read_text()
-                      for e in proposal["edits"])
-        assert applied, f"seed neither applies cleanly nor is already applied: {errors}"
+# NOTE: do not add tests that assert on the *content* of optimizer-editable
+# regions of shared/guide.js. The suite runs inside verifier worktrees where a
+# proposal has rewritten those regions, so any such test bricks gate cond1 for
+# every proposal touching them. A seed-drift test did exactly that twice
+# (sessions 20260612T154700Z and attempts 2-3 of 20260612T182857Z) and was
+# removed after the seeded retest completed. Protected safety spans are the
+# exception — they must never change, which is what check_protected_invariants
+# and its drift test assert.
 
 
 def test_apply_edits_pure():
