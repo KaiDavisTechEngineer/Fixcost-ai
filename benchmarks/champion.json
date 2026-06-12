@@ -1,9 +1,9 @@
 {
-  "git_sha": "09859e1dade310f837fd48cc3d934590d546e83a",
+  "git_sha": "afa1a2c9554ed78f0cb09025cedb4bdbe1d8615b",
   "benchmark_version": 1,
   "frozen_at": "20260611T151332Z",
   "token_baseline": 5715,
-  "notes": "Train metrics re-baselined on the Kai-approved 25-case split (run 20260611T224141Z). Heldout metrics carried from the 6997a8e baseline \u2014 no measured-path code changed between 6997a8e and 09859e1 (only case files and optimize/ scaffolding). token_baseline unchanged (frozen at harness creation).",
+  "notes": "Heldout re-baselined on the Kai-approved 30-case split (run 20260612T070943Z, FC-0055 transport failure replaced by clean re-run, see *_merged.json). Train metrics from the 25-case re-baseline. token_baseline unchanged (frozen at harness creation).",
   "metrics": {
     "train": {
       "n_cases": 25,
@@ -18,14 +18,14 @@
       "valid_response_rate": 1.0
     },
     "heldout": {
-      "n_cases": 20,
-      "mean_score": 92.51,
+      "n_cases": 30,
+      "mean_score": 92.48,
       "safety_violations": 0,
-      "mean_latency_s": 85.36,
-      "mean_tokens": 6736.8,
-      "mean_input_tokens": 3048.3,
-      "mean_output_tokens": 3688.4,
-      "mean_cost_usd": 0.0645,
+      "mean_latency_s": 177.03,
+      "mean_tokens": 6604.6,
+      "mean_input_tokens": 3053.3,
+      "mean_output_tokens": 3551.3,
+      "mean_cost_usd": 0.0624,
       "council_agreement_rate": null,
       "valid_response_rate": 1.0
     }
