@@ -1,0 +1,15 @@
+{
+  "rationale": "The two weak areas are (1) severity mid-range over-calling (info\u2192moderate or moderate\u2192urgent one-level misses) and (2) over-diagnosis of healthy vehicles (no-fault cases getting a specific repair slug). For severity, adding concrete distinguishing criteria directly in the buildPrompt JSON instructions gives the LLM clearer calibration anchors before it sees the tool schema. For diagnosis_slug, adding an explicit sentence in the prompt instructing the model to use no_fault_found when symptoms are normal/minor/expected reduces false-positive repair diagnoses. These changes are small, touch only non-safety content, and keep output length roughly the same.",
+  "edits": [
+    {
+      "file": "shared/guide.js",
+      "old": "      severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive\" },",
+      "new": "      severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"Calibrate carefully: info=cosmetic/maintenance item, no safety or reliability risk (e.g. worn wipers, old cabin filter); moderate=real issue but vehicle is still safely drivable for days/weeks (e.g. worn brake pads with meat remaining, minor oil seep); urgent=must fix within 1-2 days to prevent breakdown or damage (e.g. brake pads near metal, coolant leak that needs topping); do_not_drive=immediate safety hazard (e.g. brake failure, no oil pressure, structural damage). Do NOT escalate to urgent or do_not_drive unless the described symptoms clearly justify it.\" },"
+    },
+    {
+      "file": "shared/guide.js",
+      "old": "      diagnosis_slug: { type: \"string\", enum: DIAGNOSIS_SLUGS, description: \"the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid \u2014 never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate.\" },",
+      "new": "      diagnosis_slug: { type: \"string\", enum: DIAGNOSIS_SLUGS, description: \"the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid \u2014 never use a hybrid_* slug for an EV or vice versa. Use no_fault_found when symptoms are normal, expected for vehicle age/mileage, or no actual fault is present (e.g. normal brake dust, expected engine noise, recently serviced system). Use needs_further_diagnosis only when genuinely indeterminate. Do NOT assign a specific repair slug unless the symptom clearly points to a defect.\" },"
+    }
+  ]
+}

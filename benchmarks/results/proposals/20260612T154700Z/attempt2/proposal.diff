@@ -1,0 +1,13 @@
+--- a/shared/guide.js
++++ b/shared/guide.js
+@@ -121,8 +121,8 @@
+     properties: {
+       overview: { type: "string" },
+       repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
+-      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate." },
+-      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
++      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found when the described symptoms are normal vehicle behavior, routine maintenance, or inspection finds nothing wrong — do NOT assign a specific repair slug just because a component is mentioned if there is no confirmed fault. Use needs_further_diagnosis if genuinely indeterminate." },
++      severity: { type: "string", enum: SEVERITY_LEVELS, description: "Choose the LOWEST level that fits. info=cosmetic/normal wear/no performance impact (e.g. minor noise that does not worsen, expected maintenance item); moderate=noticeable but stable issue, fix within weeks (e.g. soft brake pedal, slow leak not losing fluid fast); urgent=actively degrading or risk of breakdown, fix within days (e.g. grinding brakes, overheating); do_not_drive=immediate safety risk, vehicle should not be moved. Do NOT escalate to urgent/do_not_drive without clear evidence of active failure or safety hazard." },
+       difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
+       time: { type: "string" },
+       difficulty_reason: { type: "string" },
