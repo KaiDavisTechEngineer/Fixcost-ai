@@ -120,6 +120,11 @@ def main():
             print("running train split on proposal…", flush=True)
             train_run = verifier.run_split_in_worktree(wt, "train")
             t_agg = train_run["aggregate"]
+            # Persist per-case run data before the worktree is removed — gate
+            # decisions must be explainable case-by-case, not just in aggregate.
+            attempt_dir = proposals_root / f"attempt{attempt}"
+            attempt_dir.mkdir(parents=True, exist_ok=True)
+            (attempt_dir / "train_run.json").write_text(json.dumps(train_run, indent=2))
             print(f"  proposal train: mean={t_agg['mean_score']} "
                   f"violations={t_agg['safety_violations']}")
 
@@ -143,6 +148,7 @@ def main():
                   f"(eval {session.data['heldout_evals']}/{verifier.MAX_HELDOUT_EVALS})…", flush=True)
             heldout_run = verifier.run_split_in_worktree(wt, "heldout")
             h_agg = heldout_run["aggregate"]
+            (attempt_dir / "heldout_run.json").write_text(json.dumps(heldout_run, indent=2))
             gate_ok, reasons = verifier.gate_decision(champion, t_agg, h_agg, tests_ok)
             pdir = verifier.write_report(proposals_root / f"attempt{attempt}", proposal, diff,
                                          t_agg, h_agg, gate_ok, reasons, champion)

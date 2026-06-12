@@ -1,0 +1,11 @@
+{
+  "rationale": "Human-authored (Kai-directed) symmetric severity calibration. Evidence: baseline over-calls the info/moderate/urgent mid-range by one level (13/25 train cases, several heldout); the rejected optimizer fix added a directional 'choose the lower' rule that collapsed on under-call scenarios (heldout 79.93). This version anchors each level to the consequence of continued driving - symmetric criteria, no directional tiebreak. Scary-sounding-but-benign symptoms get pushed down by the consequence test exactly as mild-sounding-but-dangerous ones get pushed up.",
+  "edits": [
+    {
+      "file": "shared/guide.js",
+      "old": "severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive\" },",
+      "new": "severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"Rate by the consequence of continued driving, not by how alarming the symptom sounds. info=no repair needed: normal behavior, cosmetic, or comfort-only (normal-wear effects and brief self-clearing symptoms are info even when they sound dramatic). moderate=genuine fault worth scheduling soon, but the vehicle stays safe to drive meanwhile (a steady warning light with otherwise normal driveability is usually moderate). urgent=continued driving risks a breakdown, a stall in traffic, or rapid progressive damage - applies even when the symptom currently seems minor or intermittent. do_not_drive=continued driving risks losing braking, steering, or tire integrity, or destroying the engine; a confirmed defect in those systems outranks how normal the car feels to drive. Choose the single level whose consequence description best matches the evidence; do not apply a blanket bias toward higher or lower levels.\" },"
+    }
+  ],
+  "status": "PROVISIONAL \u2014 design informed by heldout-author knowledge (integrity disclosure of 2026-06-12). Even on a gate pass, this change is NOT confirmed until it re-clears the gate after the next heldout refresh. TODO: re-evaluate against refreshed heldout before treating as confirmed."
+}
