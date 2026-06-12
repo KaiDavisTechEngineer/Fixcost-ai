@@ -15,8 +15,10 @@ council_agreement_rate is reported as null. The client-side template fallback is
 not modeled; the harness measures the AI pipeline only.
 """
 import argparse
+import concurrent.futures
 import datetime as dt
 import json
+import os
 import subprocess
 import sys
 import time
@@ -33,6 +35,17 @@ BENCHMARK_VERSION = 1
 CHAMPION_PATH = HERE / "champion.json"
 RUNS_DIR = HERE / "results" / "runs"
 PIPELINE = HERE / "pipeline.mjs"
+
+# Cases per split run concurrently behind this cap (semaphore = thread pool size).
+# Default 1 preserves the original strictly-serial behavior. Cap chosen against
+# measured account limits (450k ITPM / 90k OTPM: each stream uses ~2k of each),
+# so the practical ceiling is local network stability, not the API.
+CONCURRENCY = max(1, int(os.environ.get("FIXCOST_CONCURRENCY", "1")))
+
+
+def case_tmp_path(case_id):
+    """Per-case temp file so concurrent pipeline calls can't clobber each other."""
+    return HERE / "cases" / f"_tmp_case_{case_id}.json"
 
 # USD per token. Match by substring of the model id; fall back to Sonnet pricing.
 PRICING = {"opus": (15e-6, 75e-6), "sonnet": (3e-6, 15e-6), "haiku": (1e-6, 5e-6)}
@@ -54,7 +67,7 @@ def git_sha():
 
 def run_pipeline(case):
     """Invoke the headless node pipeline for one case; return its normalized dict."""
-    case_path = HERE / "cases" / "_tmp_case.json"
+    case_path = case_tmp_path(case["id"])
     case_path.write_text(json.dumps(case))
     # 900s covers the pipeline's worst case: 4 retry attempts on a slow-API day
     # plus backoff. A timeout becomes an error record, not a run-killer.
@@ -84,28 +97,49 @@ def load_champion():
     return None
 
 
+def _run_one(case, token_baseline):
+    out = run_pipeline(case)
+    scored = score_case(case, out, token_baseline)
+    return {"case": case["id"], **scored,
+            "diagnosis_slug": out.get("diagnosis_slug"), "app_severity": out.get("severity"),
+            "cost_range_usd": out.get("cost_range_usd"), "mentions_safety": out.get("mentions_safety"),
+            "tokens": out.get("tokens"), "input_tokens": out.get("input_tokens"),
+            "output_tokens": out.get("output_tokens"), "latency_ms": out.get("latency_ms"),
+            "stop_reason": out.get("stop_reason"), "model": out.get("model"),
+            "ok": out.get("ok"), "error": out.get("error")}
+
+
+def _print_rec(rec):
+    print(f"  {rec['case']}: total={rec['total']:.1f} diag={rec['diagnosis']} "
+          f"cost={rec['cost']} sev={rec['severity']} safety={rec['safety']} "
+          f"eff={rec['efficiency']} | slug={rec['diagnosis_slug']} "
+          f"out_tok={rec['output_tokens']} stop={rec['stop_reason']}"
+          + (f" ERR={rec['error']}" if rec.get("error") else ""))
+
+
 def run_split(cases, token_baseline, verbose=False):
-    """Run + score a list of cases. Returns (per_case_records, aggregate)."""
+    """Run + score a list of cases. Returns (per_case_records, aggregate).
+
+    With FIXCOST_CONCURRENCY > 1, cases run behind a thread-pool semaphore at
+    that cap (subprocess-bound, so threads suffice). Per-case latency is still
+    measured inside the pipeline per call, so records stay comparable with
+    serial runs; only wall clock changes. Record order follows case order.
+    """
     records = []
-    for i, c in enumerate(cases):
-        if i > 0:
-            time.sleep(1.0)  # be gentle on the connection between sequential calls
-        out = run_pipeline(c)
-        scored = score_case(c, out, token_baseline)
-        rec = {"case": c["id"], **scored,
-               "diagnosis_slug": out.get("diagnosis_slug"), "app_severity": out.get("severity"),
-               "cost_range_usd": out.get("cost_range_usd"), "mentions_safety": out.get("mentions_safety"),
-               "tokens": out.get("tokens"), "input_tokens": out.get("input_tokens"),
-               "output_tokens": out.get("output_tokens"), "latency_ms": out.get("latency_ms"),
-               "stop_reason": out.get("stop_reason"), "model": out.get("model"),
-               "ok": out.get("ok"), "error": out.get("error")}
-        records.append(rec)
-        if verbose:
-            print(f"  {c['id']}: total={scored['total']:.1f} diag={scored['diagnosis']} "
-                  f"cost={scored['cost']} sev={scored['severity']} safety={scored['safety']} "
-                  f"eff={scored['efficiency']} | slug={out.get('diagnosis_slug')} "
-                  f"out_tok={out.get('output_tokens')} stop={out.get('stop_reason')}"
-                  + (f" ERR={out.get('error')}" if out.get("error") else ""))
+    if CONCURRENCY <= 1:
+        for i, c in enumerate(cases):
+            if i > 0:
+                time.sleep(1.0)  # be gentle on the connection between sequential calls
+            rec = _run_one(c, token_baseline)
+            records.append(rec)
+            if verbose:
+                _print_rec(rec)
+    else:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=CONCURRENCY) as pool:
+            for rec in pool.map(lambda c: _run_one(c, token_baseline), cases):
+                records.append(rec)
+                if verbose:
+                    _print_rec(rec)
     return records, aggregate(records)
 
 

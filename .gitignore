@@ -10,4 +10,4 @@ dist
 
 # Benchmark transient artifacts (runs are reproducible; champion.json is tracked)
 benchmarks/results/runs/*.json
-benchmarks/cases/_tmp_case.json
+benchmarks/cases/_tmp_case*.json
