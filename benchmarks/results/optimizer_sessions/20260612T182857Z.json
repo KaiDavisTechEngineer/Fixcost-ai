@@ -1,0 +1,45 @@
+{
+  "started_utc": "20260612T182857Z",
+  "heldout_evals": 1,
+  "attempts": [
+    {
+      "attempt": 1,
+      "outcome": "gate_fail",
+      "train": {
+        "n_cases": 25,
+        "mean_score": 93.28,
+        "safety_violations": 0,
+        "mean_latency_s": 81.06,
+        "mean_tokens": 6713.2,
+        "mean_input_tokens": 3183.0,
+        "mean_output_tokens": 3530.2,
+        "mean_cost_usd": 0.0625,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "heldout": {
+        "n_cases": 30,
+        "mean_score": 79.93,
+        "safety_violations": 0,
+        "mean_latency_s": 364.54,
+        "mean_tokens": 5332.3,
+        "mean_input_tokens": 2541.3,
+        "mean_output_tokens": 2791.0,
+        "mean_cost_usd": 0.0495,
+        "council_agreement_rate": null,
+        "valid_response_rate": 0.8
+      },
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260612T182857Z/attempt1/report.md"
+    },
+    {
+      "attempt": 2,
+      "outcome": "tests_failed",
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260612T182857Z/attempt2/report.md"
+    },
+    {
+      "attempt": 3,
+      "outcome": "tests_failed",
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260612T182857Z/attempt3/report.md"
+    }
+  ]
+}

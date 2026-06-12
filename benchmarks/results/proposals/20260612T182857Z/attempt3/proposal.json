@@ -1,0 +1,15 @@
+{
+  "rationale": "The two weak components are severity mid-range calibration and over-diagnosis of healthy vehicles. For severity, adding concrete distinguishing cues (\"info=cosmetic/normal wear/no driveability impact\", \"moderate=noticeable symptom but vehicle still safe to drive\", \"urgent=driving risk or rapid deterioration\", \"do_not_drive=unsafe\") gives the model clearer boundaries to avoid one-level over-calls. For diagnosis_slug, prepending a terse instruction to prefer no_fault_found when the description indicates normal operation, expected wear, or no confirmed defect reduces false-positive repair diagnoses on healthy vehicles. Both edits are minimal, non-safety, and avoid the patterns that failed in prior attempts.",
+  "edits": [
+    {
+      "file": "shared/guide.js",
+      "old": "      diagnosis_slug: { type: \"string\", enum: DIAGNOSIS_SLUGS, description: \"the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid \u2014 never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate.\" },",
+      "new": "      diagnosis_slug: { type: \"string\", enum: DIAGNOSIS_SLUGS, description: \"the SINGLE best-matching root-cause slug from the controlled list. Prefer no_fault_found when the symptom is normal operation, expected behavior, or no defect is confirmed (e.g. routine noise, normal wear within spec, driver unfamiliarity). Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid \u2014 never use a hybrid_* slug for an EV or vice versa. Use needs_further_diagnosis only if genuinely indeterminate after considering all clues.\" },"
+    },
+    {
+      "file": "shared/guide.js",
+      "old": "      severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive\" },",
+      "new": "      severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"info=cosmetic/normal wear/no driveability impact (fix at next service); moderate=noticeable symptom but vehicle is still safe to drive (fix within weeks); urgent=active risk of damage or safety deterioration (fix within days); do_not_drive=unsafe to operate now. Choose the LOWEST level that fits \u2014 do not escalate without clear evidence.\" },"
+    }
+  ]
+}

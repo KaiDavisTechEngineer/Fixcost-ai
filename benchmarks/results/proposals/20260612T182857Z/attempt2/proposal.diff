@@ -1,0 +1,13 @@
+--- a/shared/guide.js
++++ b/shared/guide.js
+@@ -121,8 +121,8 @@
+     properties: {
+       overview: { type: "string" },
+       repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
+-      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate." },
+-      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
++      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found when symptoms are minor, expected, or no defect is confirmed (e.g. normal noises, recent service, owner concern with no fault). Use needs_further_diagnosis only if a real fault is suspected but cannot be isolated without further testing. Do NOT assign a specific repair slug unless a concrete defect is identified." },
++      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=cosmetic/minor/expected wear, no urgency (e.g. wiper blade, cabin filter, normal brake dust); moderate=noticeable issue, fix within weeks before it worsens (e.g. worn brake pads with life remaining, minor fluid seep); urgent=fix within days, risk of breakdown or accelerating damage (e.g. metal-on-metal brakes, active coolant leak); do_not_drive=immediate safety risk, vehicle should not be driven. Choose the LOWEST level that fits — do not escalate without a concrete symptom that crosses the threshold." },
+       difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
+       time: { type: "string" },
+       difficulty_reason: { type: "string" },
