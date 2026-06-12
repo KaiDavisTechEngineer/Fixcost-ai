@@ -1,0 +1,40 @@
+{
+  "id": "FC-0053",
+  "version": 1,
+  "vehicle": {
+    "year": 2011,
+    "make": "Toyota",
+    "model": "Sienna",
+    "powertrain": "gas",
+    "mileage": 171000
+  },
+  "complaint": "Popping noise when I turn and the van wanders a little on the highway — figured it just needs an alignment.",
+  "observations": [
+    "Mechanic found noticeable play in the right outer tie rod end during a shake test",
+    "Steering wheel off-center and wandering has been worsening",
+    "Front tires feathering on the edges"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "tie_rod_end",
+    "acceptable_diagnoses": [
+      "tie_rod_end"
+    ],
+    "wrong_but_plausible": [
+      "ball_joint",
+      "wheel_alignment"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      500
+    ],
+    "severity": "do_not_drive"
+  },
+  "tags": [
+    "steering",
+    "safety_critical",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

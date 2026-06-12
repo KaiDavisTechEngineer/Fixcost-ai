@@ -1,0 +1,42 @@
+{
+  "id": "FC-0046",
+  "version": 1,
+  "vehicle": {
+    "year": 2019,
+    "make": "Honda",
+    "model": "CR-V",
+    "powertrain": "gas",
+    "mileage": 67000
+  },
+  "complaint": "Brake fluid is below where it used to be in the reservoir — do I have a brake fluid leak?",
+  "observations": [
+    "Fluid sits between the MIN and MAX marks",
+    "Front pads measured at 5mm at the last rotation",
+    "No damp spots on any wheel, line, or under the master cylinder"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "no_fault_found",
+    "acceptable_diagnoses": [
+      "no_fault_found",
+      "needs_further_diagnosis"
+    ],
+    "wrong_but_plausible": [
+      "brake_fluid_leak",
+      "brake_master_cylinder"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      0,
+      100
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "brakes",
+    "monitor",
+    "over_diagnosis",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

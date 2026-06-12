@@ -1,0 +1,39 @@
+{
+  "id": "FC-0055",
+  "version": 1,
+  "vehicle": {
+    "year": 2015,
+    "make": "Toyota",
+    "model": "Highlander",
+    "powertrain": "hybrid",
+    "mileage": 158000
+  },
+  "complaint": "Fuel economy on my Highlander Hybrid has dropped 15-20% and the battery gauge swings from full to low much faster than it used to, especially on hot days.",
+  "observations": [
+    "No warning lights yet",
+    "Engine seems to run far more often than before",
+    "Battery cooling vent under the rear seat is clean and unobstructed"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "hybrid_battery_pack",
+    "acceptable_diagnoses": [
+      "hybrid_battery_pack"
+    ],
+    "wrong_but_plausible": [
+      "hybrid_inverter_coolant_pump",
+      "needs_further_diagnosis"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      1500,
+      4000
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "hybrid",
+    "high_voltage",
+    "severity_calibration"
+  ]
+}

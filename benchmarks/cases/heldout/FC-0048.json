@@ -1,0 +1,38 @@
+{
+  "id": "FC-0048",
+  "version": 1,
+  "vehicle": {
+    "year": 2017,
+    "make": "Volkswagen",
+    "model": "Tiguan",
+    "powertrain": "gas",
+    "mileage": 61000
+  },
+  "complaint": "Musty, gym-sock smell every time the AC first kicks on.",
+  "observations": [
+    "Smell fades after a minute or two of airflow",
+    "Cabin filter has never been replaced in 60k+ miles",
+    "AC cools normally, no fogging or dampness in the carpet"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "cabin_air_filter",
+    "acceptable_diagnoses": [
+      "cabin_air_filter"
+    ],
+    "wrong_but_plausible": [
+      "ac_evaporator",
+      "heater_core"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      30,
+      120
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "hvac",
+    "severity_calibration"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "FC-0049",
+  "version": 1,
+  "vehicle": {
+    "year": 2016,
+    "make": "Ford",
+    "model": "Edge",
+    "powertrain": "gas",
+    "mileage": 104000
+  },
+  "complaint": "ABS and traction control warning lights are both on constantly — are my brakes about to fail?",
+  "observations": [
+    "Normal pedal feel and stopping power in everyday driving",
+    "Wheel-speed sensor code stored for the left front",
+    "Lights came on suddenly after a gravel-road trip"
+  ],
+  "dtc_codes": [
+    "C0035"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "abs_wheel_speed_sensor",
+    "acceptable_diagnoses": [
+      "abs_wheel_speed_sensor"
+    ],
+    "wrong_but_plausible": [
+      "abs_module",
+      "brake_pads_front"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      400
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "brakes",
+    "electrical",
+    "dtc",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

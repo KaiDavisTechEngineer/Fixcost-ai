@@ -1,0 +1,40 @@
+{
+  "id": "FC-0051",
+  "version": 1,
+  "vehicle": {
+    "year": 2013,
+    "make": "Ram",
+    "model": "1500",
+    "powertrain": "gas",
+    "mileage": 163000
+  },
+  "complaint": "There's been a slight clunk from the front end and the steering feels a touch loose — it's been like that for months, so it can't be serious, right?",
+  "observations": [
+    "Clunk over bumps and when turning at parking speeds",
+    "With the wheel jacked, there is visible vertical play at the lower ball joint with a pry bar",
+    "Front tires show uneven inner-edge wear"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "ball_joint",
+    "acceptable_diagnoses": [
+      "ball_joint"
+    ],
+    "wrong_but_plausible": [
+      "control_arm_bushing",
+      "tie_rod_end"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      250,
+      700
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "suspension",
+    "steering",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

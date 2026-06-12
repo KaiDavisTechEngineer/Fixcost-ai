@@ -1,0 +1,42 @@
+{
+  "id": "FC-0050",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "Mazda",
+    "model": "Mazda3",
+    "powertrain": "gas",
+    "mileage": 118000
+  },
+  "complaint": "Check engine light on and my fuel economy has dropped a few MPG over the last month.",
+  "observations": [
+    "Slow-response code stored for the upstream oxygen sensor",
+    "Engine runs smooth, no other symptoms",
+    "Sensor is the factory original"
+  ],
+  "dtc_codes": [
+    "P0133"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "oxygen_sensor_upstream",
+    "acceptable_diagnoses": [
+      "oxygen_sensor_upstream"
+    ],
+    "wrong_but_plausible": [
+      "mass_air_flow_sensor",
+      "catalytic_converter"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      450
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "emissions",
+    "engine",
+    "dtc",
+    "severity_calibration"
+  ]
+}

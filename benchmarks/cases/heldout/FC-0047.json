@@ -1,0 +1,42 @@
+{
+  "id": "FC-0047",
+  "version": 1,
+  "vehicle": {
+    "year": 2020,
+    "make": "Kia",
+    "model": "Forte",
+    "powertrain": "gas",
+    "mileage": 43000
+  },
+  "complaint": "White smoke from my exhaust and water dripping out of the tailpipe — is my head gasket blown?",
+  "observations": [
+    "Vapor and dripping only on cold mornings, gone after a few minutes of driving",
+    "Coolant level has not moved in months",
+    "No sweet smell, oil is clean under the cap"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "no_fault_found",
+    "acceptable_diagnoses": [
+      "no_fault_found",
+      "needs_further_diagnosis"
+    ],
+    "wrong_but_plausible": [
+      "head_gasket",
+      "head_gasket_coolant_loss"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      0,
+      80
+    ],
+    "severity": "info"
+  },
+  "tags": [
+    "engine",
+    "monitor",
+    "over_diagnosis",
+    "adversarial",
+    "severity_calibration"
+  ]
+}

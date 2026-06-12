@@ -1,0 +1,40 @@
+{
+  "id": "FC-0054",
+  "version": 1,
+  "vehicle": {
+    "year": 2019,
+    "make": "Chevy",
+    "model": "Bolt EV",
+    "powertrain": "ev",
+    "mileage": 58000
+  },
+  "complaint": "My Bolt stopped charging at home on both the regular cord and my Level 2 wall box, but DC fast charging at public stations still works fine.",
+  "observations": [
+    "Level 1 and Level 2 AC charging both fail within seconds of plugging in",
+    "DC fast charging works normally to 100%",
+    "Charge port latch and pins look clean and undamaged"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "ev_onboard_charger",
+    "acceptable_diagnoses": [
+      "ev_onboard_charger"
+    ],
+    "wrong_but_plausible": [
+      "ev_charging_port",
+      "dc_dc_converter"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      800,
+      2500
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "ev",
+    "high_voltage",
+    "charging",
+    "severity_calibration"
+  ]
+}

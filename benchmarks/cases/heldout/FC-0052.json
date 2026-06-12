@@ -1,0 +1,40 @@
+{
+  "id": "FC-0052",
+  "version": 1,
+  "vehicle": {
+    "year": 2015,
+    "make": "Chevy",
+    "model": "Cruze",
+    "powertrain": "gas",
+    "mileage": 127000
+  },
+  "complaint": "Engine died twice on the highway but restarted after a few minutes — it's only happened twice so I've been ignoring it.",
+  "observations": [
+    "Both stalls happened after 30+ minutes of driving on hot days",
+    "Long crank to restart when the engine is hot",
+    "Fuel pressure sags well below spec under wide-open throttle on a gauge test"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "fuel_pump",
+    "acceptable_diagnoses": [
+      "fuel_pump"
+    ],
+    "wrong_but_plausible": [
+      "crankshaft_position_sensor",
+      "battery_weak"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      400,
+      1000
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "fuel",
+    "engine",
+    "adversarial",
+    "severity_calibration"
+  ]
+}
