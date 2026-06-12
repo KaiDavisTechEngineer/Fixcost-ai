@@ -1,0 +1,21 @@
+{
+  "started_utc": "20260612T154700Z",
+  "heldout_evals": 0,
+  "attempts": [
+    {
+      "attempt": 1,
+      "outcome": "tests_failed",
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260612T154700Z/attempt1/report.md"
+    },
+    {
+      "attempt": 2,
+      "outcome": "tests_failed",
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260612T154700Z/attempt2/report.md"
+    },
+    {
+      "attempt": 3,
+      "outcome": "tests_failed",
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260612T154700Z/attempt3/report.md"
+    }
+  ]
+}
