@@ -1,0 +1,13 @@
+--- a/shared/guide.js
++++ b/shared/guide.js
+@@ -121,8 +121,8 @@
+     properties: {
+       overview: { type: "string" },
+       repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
+-      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate." },
+-      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
++      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if symptoms are normal/expected or no defect is confirmed; use needs_further_diagnosis if genuinely indeterminate. Do NOT assign a specific repair slug unless a real fault is clearly indicated." },
++      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=cosmetic or informational, no urgency (e.g. minor noise, low-priority maintenance); moderate=drivable but schedule repair within weeks (e.g. worn pads with life remaining, minor fluid seep); urgent=fix within days, continued driving risks damage (e.g. active leak, grinding, warning light indicating imminent failure); do_not_drive=unsafe to drive, stop immediately" },
+       difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
+       time: { type: "string" },
+       difficulty_reason: { type: "string" },

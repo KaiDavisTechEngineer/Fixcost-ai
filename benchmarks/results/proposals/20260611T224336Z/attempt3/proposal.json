@@ -1,0 +1,15 @@
+{
+  "rationale": "The two weak components are severity mid-range calibration (info/moderate/urgent one-level misses) and over-diagnosis of healthy vehicles (no_fault_found being replaced by specific repair slugs). Previous attempts failed the verifier gate, likely because the description text grew too long or touched restricted areas. This attempt makes the smallest possible targeted edits: (1) for diagnosis_slug, add a brief but explicit reminder to prefer no_fault_found when symptoms are consistent with normal operation or no defect is confirmed; (2) for severity, add concise landmark anchors inline \u2014 \"info=cosmetic/normal wear no urgency, moderate=drivable but fix within weeks, urgent=fix within days, do_not_drive=unsafe to drive\" \u2014 without expanding the field substantially.",
+  "edits": [
+    {
+      "file": "shared/guide.js",
+      "old": "diagnosis_slug: { type: \"string\", enum: DIAGNOSIS_SLUGS, description: \"the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid \u2014 never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate.\" }",
+      "new": "diagnosis_slug: { type: \"string\", enum: DIAGNOSIS_SLUGS, description: \"the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid \u2014 never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if symptoms are normal/expected or no defect is confirmed; use needs_further_diagnosis if genuinely indeterminate. Do NOT assign a specific repair slug unless a real fault is clearly indicated.\" }"
+    },
+    {
+      "file": "shared/guide.js",
+      "old": "severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive\" }",
+      "new": "severity: { type: \"string\", enum: SEVERITY_LEVELS, description: \"info=cosmetic or informational, no urgency (e.g. minor noise, low-priority maintenance); moderate=drivable but schedule repair within weeks (e.g. worn pads with life remaining, minor fluid seep); urgent=fix within days, continued driving risks damage (e.g. active leak, grinding, warning light indicating imminent failure); do_not_drive=unsafe to drive, stop immediately\" }"
+    }
+  ]
+}

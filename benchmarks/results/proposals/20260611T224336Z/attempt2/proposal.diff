@@ -1,0 +1,13 @@
+--- a/shared/guide.js
++++ b/shared/guide.js
+@@ -121,8 +121,8 @@
+     properties: {
+       overview: { type: "string" },
+       repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
+-      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate." },
+-      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
++      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found when symptoms are absent, normal for the vehicle, or fully explained by routine maintenance already performed — do NOT assign a specific repair slug just because a part could theoretically fail. Use needs_further_diagnosis only if the symptom is real but the cause is genuinely indeterminate after considering the description." },
++      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency (minor noise, cosmetic, routine maintenance due); moderate=fix within days/weeks (warning light on but driveable, gradual performance loss, intermittent issue); urgent=fix within 24-48 hours (continuous warning light, significant performance impact, risk of further damage); do_not_drive=unsafe to drive (brakes failing, steering loss, active fluid leak on hot components). When in doubt between two adjacent levels, choose the lower one." },
+       difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
+       time: { type: "string" },
+       difficulty_reason: { type: "string" },

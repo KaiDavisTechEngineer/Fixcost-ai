@@ -1,0 +1,13 @@
+--- a/shared/guide.js
++++ b/shared/guide.js
+@@ -121,8 +121,8 @@
+     properties: {
+       overview: { type: "string" },
+       repair_target: { type: "string", description: "single most likely specific part/repair, short searchable terms" },
+-      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. Use no_fault_found if nothing is wrong, needs_further_diagnosis if genuinely indeterminate." },
+-      severity: { type: "string", enum: SEVERITY_LEVELS, description: "info=no urgency, moderate=fix soon, urgent=fix now, do_not_drive=unsafe to drive" },
++      diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS, description: "the SINGLE best-matching root-cause slug from the controlled list. Match the vehicle's powertrain: use ev_* slugs (e.g. ev_battery_pack) for a fully electric vehicle and hybrid_* slugs for a hybrid — never use a hybrid_* slug for an EV or vice versa. IMPORTANT: if the described symptoms are normal vehicle behavior, expected wear at reported mileage, or no concrete fault is mentioned, use no_fault_found rather than guessing a specific repair — over-diagnosis wastes the owner's money. Use needs_further_diagnosis only when symptoms are real but genuinely ambiguous without hands-on inspection." },
++      severity: { type: "string", enum: SEVERITY_LEVELS, description: "Pick exactly one level: info=cosmetic or minor inconvenience, no safety/reliability impact (e.g. a squeaky trim piece, informational warning light with no drivability effect); moderate=noticeable symptom that should be repaired within days-to-weeks but poses no immediate danger (e.g. worn brake pads above minimum thickness, slow coolant seep, intermittent rough idle); urgent=active problem that risks breakdown or component damage soon — schedule same-day or within 24 h (e.g. brake squeal metal-on-metal, coolant temp rising, battery warning while driving); do_not_drive=immediately unsafe to operate (e.g. brake pedal to floor, steering loss, active fluid fire, structural failure). When in doubt between two adjacent levels, choose the lower one unless there is a clear safety or imminent-breakdown risk." },
+       difficulty: { type: "string", enum: ["Beginner", "Intermediate", "Advanced"] },
+       time: { type: "string" },
+       difficulty_reason: { type: "string" },

@@ -1,0 +1,93 @@
+{
+  "started_utc": "20260611T224336Z",
+  "heldout_evals": 3,
+  "attempts": [
+    {
+      "attempt": 1,
+      "outcome": "gate_fail",
+      "train": {
+        "n_cases": 25,
+        "mean_score": 94.04,
+        "safety_violations": 0,
+        "mean_latency_s": 81.99,
+        "mean_tokens": 6880.4,
+        "mean_input_tokens": 3277.0,
+        "mean_output_tokens": 3603.3,
+        "mean_cost_usd": 0.0639,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "heldout": {
+        "n_cases": 20,
+        "mean_score": 90.57,
+        "safety_violations": 0,
+        "mean_latency_s": 81.66,
+        "mean_tokens": 6819.4,
+        "mean_input_tokens": 3264.3,
+        "mean_output_tokens": 3555.1,
+        "mean_cost_usd": 0.0631,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260611T224336Z/attempt1/report.md"
+    },
+    {
+      "attempt": 2,
+      "outcome": "gate_fail",
+      "train": {
+        "n_cases": 25,
+        "mean_score": 94.7,
+        "safety_violations": 0,
+        "mean_latency_s": 79.55,
+        "mean_tokens": 6654.9,
+        "mean_input_tokens": 3183.0,
+        "mean_output_tokens": 3471.9,
+        "mean_cost_usd": 0.0616,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "heldout": {
+        "n_cases": 20,
+        "mean_score": 92.82,
+        "safety_violations": 0,
+        "mean_latency_s": 82.71,
+        "mean_tokens": 6758.4,
+        "mean_input_tokens": 3170.3,
+        "mean_output_tokens": 3588.1,
+        "mean_cost_usd": 0.0633,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260611T224336Z/attempt2/report.md"
+    },
+    {
+      "attempt": 3,
+      "outcome": "gate_fail",
+      "train": {
+        "n_cases": 25,
+        "mean_score": 93.43,
+        "safety_violations": 0,
+        "mean_latency_s": 237.15,
+        "mean_tokens": 6784.5,
+        "mean_input_tokens": 3150.0,
+        "mean_output_tokens": 3634.4,
+        "mean_cost_usd": 0.064,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "heldout": {
+        "n_cases": 20,
+        "mean_score": 91.68,
+        "safety_violations": 0,
+        "mean_latency_s": 82.62,
+        "mean_tokens": 6752.6,
+        "mean_input_tokens": 3137.3,
+        "mean_output_tokens": 3615.2,
+        "mean_cost_usd": 0.0636,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260611T224336Z/attempt3/report.md"
+    }
+  ]
+}
