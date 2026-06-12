@@ -40,6 +40,10 @@ def main():
     ap.add_argument("--goal", required=True, help="aggregate-level improvement goal for the optimizer")
     ap.add_argument("--max-attempts", type=int, default=3)
     ap.add_argument("--session", help="resume an existing session file (budget persists)")
+    ap.add_argument("--seed-proposal",
+                    help="path to a proposal.json evaluated VERBATIM as attempt 1 (e.g. a "
+                         "near-miss from a prior session, retested against refreshed heldout). "
+                         "Gets no special treatment: same validation, invariants, tests, and gate.")
     args = ap.parse_args()
 
     require_clean_tree()
@@ -69,8 +73,12 @@ def main():
               f"(heldout evals used: {session.data['heldout_evals']}/{verifier.MAX_HELDOUT_EVALS}) ===",
               flush=True)
 
-        # OPTIMIZER
-        proposal = optimizer.propose(view, REPO, args.goal, prior_attempts=prior)
+        # OPTIMIZER (or a seeded proposal for attempt 1)
+        if attempt == 1 and args.seed_proposal:
+            proposal = json.loads(Path(args.seed_proposal).read_text())
+            print(f"using seeded proposal: {args.seed_proposal}")
+        else:
+            proposal = optimizer.propose(view, REPO, args.goal, prior_attempts=prior)
         print(f"optimizer rationale: {proposal.get('rationale', '')[:300]}")
         errors = optimizer.validate_proposal(proposal, REPO)
         if errors:

@@ -145,6 +145,16 @@ def test_protected_invariants_match_real_file():
     assert check_protected_invariants(repo_root, PROTECTED_INVARIANTS) == []
 
 
+def test_attempt2_seed_proposal_still_applies():
+    """The session-3 near-miss proposal is queued for a seeded retest; its
+    edits must still validate against the current shared/guide.js."""
+    import json
+    repo_root = Path(__file__).resolve().parents[2]
+    seed = repo_root / "benchmarks/results/proposals/20260611T224336Z/attempt2/proposal.json"
+    proposal = json.loads(seed.read_text())
+    assert validate_proposal(proposal, repo_root) == []
+
+
 def test_apply_edits_pure():
     files = {"shared/guide.js": "alpha beta gamma"}
     out = apply_edits(files, [{"file": "shared/guide.js", "old": "beta", "new": "BETA"}])
