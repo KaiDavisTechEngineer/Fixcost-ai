@@ -147,12 +147,19 @@ def test_protected_invariants_match_real_file():
 
 def test_attempt2_seed_proposal_still_applies():
     """The session-3 near-miss proposal is queued for a seeded retest; its
-    edits must still validate against the current shared/guide.js."""
+    edits must still validate against shared/guide.js. The suite also runs
+    inside verifier worktrees where a proposal is ALREADY applied — there the
+    'old' text is legitimately gone, so accept either state (this exact test
+    once failed in-worktree and bricked gate cond1 for a whole session)."""
     import json
     repo_root = Path(__file__).resolve().parents[2]
     seed = repo_root / "benchmarks/results/proposals/20260611T224336Z/attempt2/proposal.json"
     proposal = json.loads(seed.read_text())
-    assert validate_proposal(proposal, repo_root) == []
+    errors = validate_proposal(proposal, repo_root)
+    if errors:
+        applied = all(e["new"] in (repo_root / e["file"]).read_text()
+                      for e in proposal["edits"])
+        assert applied, f"seed neither applies cleanly nor is already applied: {errors}"
 
 
 def test_apply_edits_pure():
