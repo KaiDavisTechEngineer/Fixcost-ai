@@ -56,11 +56,18 @@ def run_pipeline(case):
     """Invoke the headless node pipeline for one case; return its normalized dict."""
     case_path = HERE / "cases" / "_tmp_case.json"
     case_path.write_text(json.dumps(case))
+    # 900s covers the pipeline's worst case: 4 retry attempts on a slow-API day
+    # plus backoff. A timeout becomes an error record, not a run-killer.
     try:
         proc = subprocess.run(
             ["node", str(PIPELINE), str(case_path)],
-            capture_output=True, text=True, timeout=300,
+            capture_output=True, text=True, timeout=900,
         )
+    except subprocess.TimeoutExpired:
+        return {"id": case["id"], "ok": False, "error": "pipeline timeout after 900s",
+                "diagnosis_slug": None, "cost_range_usd": None, "severity": None,
+                "mentions_safety": False, "tokens": 0, "input_tokens": 0, "output_tokens": 0,
+                "latency_ms": 900000, "stop_reason": None, "model": None}
     finally:
         case_path.unlink(missing_ok=True)
     if proc.returncode != 0 or not proc.stdout.strip():
