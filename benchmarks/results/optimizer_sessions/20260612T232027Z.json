@@ -1,0 +1,35 @@
+{
+  "started_utc": "20260612T232027Z",
+  "heldout_evals": 1,
+  "attempts": [
+    {
+      "attempt": 1,
+      "outcome": "gate_fail",
+      "train": {
+        "n_cases": 25,
+        "mean_score": 91.17,
+        "safety_violations": 0,
+        "mean_latency_s": 80.63,
+        "mean_tokens": 6755.4,
+        "mean_input_tokens": 3219.0,
+        "mean_output_tokens": 3536.3,
+        "mean_cost_usd": 0.0627,
+        "council_agreement_rate": null,
+        "valid_response_rate": 1.0
+      },
+      "heldout": {
+        "n_cases": 30,
+        "mean_score": 83.61,
+        "safety_violations": 2,
+        "mean_latency_s": 326.56,
+        "mean_tokens": 5806.9,
+        "mean_input_tokens": 2781.1,
+        "mean_output_tokens": 3025.8,
+        "mean_cost_usd": 0.0537,
+        "council_agreement_rate": null,
+        "valid_response_rate": 0.867
+      },
+      "report": "/Users/kaidavis/Projects/fixcost-deploy/benchmarks/results/proposals/20260612T232027Z/attempt1/report.md"
+    }
+  ]
+}
