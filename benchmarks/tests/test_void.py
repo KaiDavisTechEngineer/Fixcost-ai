@@ -47,6 +47,9 @@ def _patch(monkeypatch, fail_at, msg):
         return _good_out(case)
     monkeypatch.setattr(rb, "run_pipeline", fake_pipeline)
     monkeypatch.setattr(rb.time, "sleep", lambda s: None)
+    # Good records use model "m"; pin to it so the model-pin guard (separate
+    # concern, tested in test_model_pin.py) doesn't trip these error-path tests.
+    monkeypatch.setattr(rb, "pinned_scoring_model", lambda: "m")
 
 
 def test_billing_error_mid_split_voids_serial(monkeypatch):
@@ -79,6 +82,7 @@ def test_clean_split_still_scores(monkeypatch):
     cases = [_case(i) for i in range(5)]
     monkeypatch.setattr(rb, "run_pipeline", _good_out)
     monkeypatch.setattr(rb.time, "sleep", lambda s: None)
+    monkeypatch.setattr(rb, "pinned_scoring_model", lambda: "m")
     monkeypatch.setattr(rb, "CONCURRENCY", 4)
     records, agg = rb.run_split(cases, 5715)
     assert len(records) == 5

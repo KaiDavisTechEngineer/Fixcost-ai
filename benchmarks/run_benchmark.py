@@ -42,6 +42,26 @@ PIPELINE = HERE / "pipeline.mjs"
 # so the practical ceiling is local network stability, not the API.
 CONCURRENCY = max(1, int(os.environ.get("FIXCOST_CONCURRENCY", "1")))
 
+# The benchmark's OWN pinned scoring model — the model that grades each case.
+# Deliberately a separate constant, NOT production's resolveModel() default:
+# bumping the app's production model must not silently move the measurement
+# instrument. The authoritative value for an existing champion is the
+# scoring_model it was frozen on (champion.json); this constant only seeds a
+# fresh baseline before any champion exists. Changing it invalidates every
+# comparison and requires a full re-baseline.
+SCORER_MODEL = "claude-sonnet-4-6"
+
+
+def pinned_scoring_model():
+    """The model this run must score on: the champion's frozen scoring_model if
+    one exists, else the harness constant. The guard in _run_one VOIDs any case
+    that actually scored on a different model (e.g. a stray ANTHROPIC_MODEL or a
+    bumped production default)."""
+    champ = load_champion()
+    if champ and champ.get("scoring_model"):
+        return champ["scoring_model"]
+    return SCORER_MODEL
+
 
 def case_tmp_path(case_id):
     """Per-case temp file so concurrent pipeline calls can't clobber each other."""
@@ -108,11 +128,17 @@ def load_champion():
     return None
 
 
-def _run_one(case, token_baseline):
+def _run_one(case, token_baseline, scorer_model):
     out = run_pipeline(case)
     if out.get("error"):
         # Fail fast: an error record must never reach the scorer.
         raise SplitVoidError([(case["id"], out["error"])])
+    # Model-pin guard: a case scored on any model other than the pinned one
+    # would make this run incomparable to the champion. VOID rather than
+    # silently fold a drifted-model score into the aggregate.
+    if out.get("model") != scorer_model:
+        raise SplitVoidError([(case["id"],
+            f"model drift: scored on {out.get('model')!r}, pinned to {scorer_model!r}")])
     scored = score_case(case, out, token_baseline)
     return {"case": case["id"], **scored,
             "diagnosis_slug": out.get("diagnosis_slug"), "app_severity": out.get("severity"),
@@ -140,18 +166,19 @@ def run_split(cases, token_baseline, verbose=False):
     serial runs; only wall clock changes. Record order follows case order.
     """
     records = []
+    scorer_model = pinned_scoring_model()
     if CONCURRENCY <= 1:
         for i, c in enumerate(cases):
             if i > 0:
                 time.sleep(1.0)  # be gentle on the connection between sequential calls
-            rec = _run_one(c, token_baseline)
+            rec = _run_one(c, token_baseline, scorer_model)
             records.append(rec)
             if verbose:
                 _print_rec(rec)
     else:
         with concurrent.futures.ThreadPoolExecutor(max_workers=CONCURRENCY) as pool:
             try:
-                for rec in pool.map(lambda c: _run_one(c, token_baseline), cases):
+                for rec in pool.map(lambda c: _run_one(c, token_baseline, scorer_model), cases):
                     records.append(rec)
                     if verbose:
                         _print_rec(rec)
@@ -238,6 +265,7 @@ def write_champion(sha, token_baseline, train_agg, heldout_agg):
         "git_sha": sha, "benchmark_version": BENCHMARK_VERSION,
         "frozen_at": dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
         "token_baseline": token_baseline,
+        "scoring_model": pinned_scoring_model(),  # self-document the grading model
         "metrics": {"train": train_agg, "heldout": heldout_agg},
     }
     CHAMPION_PATH.write_text(json.dumps(payload, indent=2))

@@ -3,7 +3,8 @@
   "benchmark_version": 1,
   "frozen_at": "20260611T151332Z",
   "token_baseline": 5715,
-  "notes": "Heldout re-baselined on the Kai-approved 30-case split (run 20260612T070943Z, FC-0055 transport failure replaced by clean re-run, see *_merged.json). Train metrics from the 25-case re-baseline. token_baseline unchanged (frozen at harness creation).",
+  "scoring_model": "claude-sonnet-4-6",
+  "notes": "Heldout re-baselined on the Kai-approved 30-case split (run 20260612T070943Z, FC-0055 transport failure replaced by clean re-run, see *_merged.json). Train metrics from the 25-case re-baseline. token_baseline unchanged (frozen at harness creation). scoring_model recorded retroactively 2026-06-13: all 410 persisted scored cases were claude-sonnet-4-6 (audited), so this is the model this baseline was scored on.",
   "metrics": {
     "train": {
       "n_cases": 25,
