@@ -47,6 +47,17 @@ def case_tmp_path(case_id):
     """Per-case temp file so concurrent pipeline calls can't clobber each other."""
     return HERE / "cases" / f"_tmp_case_{case_id}.json"
 
+
+class SplitVoidError(RuntimeError):
+    """A case hard-errored (billing, credit, network, timeout). The whole split
+    is VOID: error records are not model answers and must never be scored into
+    an aggregate or a gate decision (they corrupted two gate runs before this
+    existed). Kai-approved hardening, 2026-06-13."""
+
+    def __init__(self, errors):
+        self.errors = list(errors)  # [(case_id, error_message), ...]
+        super().__init__("; ".join(f"{c}: {e}" for c, e in self.errors))
+
 # USD per token. Match by substring of the model id; fall back to Sonnet pricing.
 PRICING = {"opus": (15e-6, 75e-6), "sonnet": (3e-6, 15e-6), "haiku": (1e-6, 5e-6)}
 
@@ -99,6 +110,9 @@ def load_champion():
 
 def _run_one(case, token_baseline):
     out = run_pipeline(case)
+    if out.get("error"):
+        # Fail fast: an error record must never reach the scorer.
+        raise SplitVoidError([(case["id"], out["error"])])
     scored = score_case(case, out, token_baseline)
     return {"case": case["id"], **scored,
             "diagnosis_slug": out.get("diagnosis_slug"), "app_severity": out.get("severity"),
@@ -136,10 +150,16 @@ def run_split(cases, token_baseline, verbose=False):
                 _print_rec(rec)
     else:
         with concurrent.futures.ThreadPoolExecutor(max_workers=CONCURRENCY) as pool:
-            for rec in pool.map(lambda c: _run_one(c, token_baseline), cases):
-                records.append(rec)
-                if verbose:
-                    _print_rec(rec)
+            try:
+                for rec in pool.map(lambda c: _run_one(c, token_baseline), cases):
+                    records.append(rec)
+                    if verbose:
+                        _print_rec(rec)
+            except SplitVoidError:
+                # Cancel everything still queued; in-flight calls finish and
+                # are discarded. The split is void either way.
+                pool.shutdown(wait=False, cancel_futures=True)
+                raise
     return records, aggregate(records)
 
 
@@ -261,7 +281,11 @@ def main():
             print(f"case {args.case} not found", file=sys.stderr); sys.exit(2)
         precheck_cases(match)
         tb = resolve_token_baseline(None)
-        records, agg = run_split(match, tb, verbose=True)
+        try:
+            records, agg = run_split(match, tb, verbose=True)
+        except SplitVoidError as e:
+            print(f"SPLIT VOID (case run): {e}", file=sys.stderr)
+            sys.exit(3)
         print(json.dumps({"aggregate": agg, "cases": records}, indent=2))
         return
 
@@ -271,13 +295,12 @@ def main():
         if not train and not heldout:
             print("no cases committed yet", file=sys.stderr); sys.exit(2)
         # First pass with no efficiency baseline (scored later); freeze baseline from observed tokens.
-        all_recs_train, _ = run_split(train, None, verbose=args.verbose)
-        all_recs_heldout, _ = run_split(heldout, None, verbose=args.verbose)
-        errored = [r["case"] for r in all_recs_train + all_recs_heldout if r.get("error")]
-        if errored:
-            print(f"ABORT: transport error on {errored} (not truncation) — re-run; "
-                  f"refusing to freeze a champion over failed calls", file=sys.stderr)
-            sys.exit(1)
+        try:
+            all_recs_train, _ = run_split(train, None, verbose=args.verbose)
+            all_recs_heldout, _ = run_split(heldout, None, verbose=args.verbose)
+        except SplitVoidError as e:
+            print(f"BASELINE VOID (infrastructure error, nothing frozen): {e}", file=sys.stderr)
+            sys.exit(3)
         all_tokens = [r["tokens"] for r in all_recs_train + all_recs_heldout if r.get("tokens")]
         token_baseline = round(sum(all_tokens) / len(all_tokens)) if all_tokens else None
         # Re-score with the frozen baseline so efficiency is meaningful.
@@ -300,7 +323,11 @@ def main():
     if not cases:
         print(f"no cases in split '{args.split}'", file=sys.stderr); sys.exit(2)
     tb = resolve_token_baseline(None)
-    records, agg = run_split(cases, tb, verbose=args.verbose)
+    try:
+        records, agg = run_split(cases, tb, verbose=args.verbose)
+    except SplitVoidError as e:
+        print(f"SPLIT VOID ({args.split}): {e}", file=sys.stderr)
+        sys.exit(3)
     path = write_run(args.split, records, agg, tb)
     print(f"\n{args.split.upper()} {agg}")
     print(f"run written: {path}")

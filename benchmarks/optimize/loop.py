@@ -12,6 +12,7 @@ main tree. Max 3 heldout evaluations per session, enforced in Session.
 import argparse
 import datetime as dt
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -21,10 +22,53 @@ BENCH = REPO / "benchmarks"
 sys.path.insert(0, str(BENCH))
 sys.path.insert(0, str(BENCH / "optimize"))
 
-from run_benchmark import load_champion  # noqa: E402
+from run_benchmark import load_champion, SplitVoidError  # noqa: E402
+from schema.validate import load_cases  # noqa: E402
 import evaluator  # noqa: E402
 import optimizer  # noqa: E402
 import verifier  # noqa: E402
+
+EST_COST_PER_CALL_USD = 0.07  # observed mean ~$0.063/call + margin
+
+
+def preflight(max_attempts):
+    """Abort before spending anything if credits are already exhausted.
+
+    The API exposes no remaining-balance endpoint, so this cannot verify the
+    balance covers the whole run — it makes one ~1-token probe call (detects
+    an already-empty balance) and prints the worst-case cost estimate. The
+    mid-run guard is SplitVoidError fail-fast (Kai-approved hardening).
+    """
+    n_train, n_heldout = len(load_cases("train")), len(load_cases("heldout"))
+    calls = n_train + max_attempts * (n_train + n_heldout) + max_attempts
+    print(f"preflight: worst-case ~{calls} calls ≈ ${calls * EST_COST_PER_CALL_USD:.2f} "
+          f"(no balance endpoint exists; probing for already-exhausted credits)")
+    import urllib.error
+    import urllib.request
+    body = json.dumps({
+        "model": os.environ.get("ANTHROPIC_MODEL") or "claude-sonnet-4-6",
+        "max_tokens": 1,
+        "messages": [{"role": "user", "content": "ping"}],
+    }).encode()
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages", data=body, method="POST",
+        headers={"Content-Type": "application/json",
+                 "x-api-key": os.environ.get("ANTHROPIC_API_KEY", ""),
+                 "anthropic-version": "2023-06-01"})
+    try:
+        with urllib.request.urlopen(req, timeout=60):
+            pass
+    except urllib.error.HTTPError as e:
+        try:
+            msg = json.load(e)["error"]["message"]
+        except Exception:
+            msg = f"HTTP {e.code}"
+        print(f"PREFLIGHT ABORT: probe failed — {msg}", file=sys.stderr)
+        sys.exit(2)
+    except urllib.error.URLError as e:
+        print(f"PREFLIGHT ABORT: network unreachable — {e}", file=sys.stderr)
+        sys.exit(2)
+    print("preflight: probe OK")
 
 
 def require_clean_tree():
@@ -59,10 +103,16 @@ def main():
     proposals_root = BENCH / "results" / "proposals" / stamp
     print(f"session: {session_path}")
 
+    preflight(args.max_attempts)
+
     # EVALUATOR — fresh train aggregate on current code; this (and only this)
     # feeds the optimizer.
     print("evaluating train split on current code…", flush=True)
-    train_report = evaluator.evaluate_split("train")
+    try:
+        train_report = evaluator.evaluate_split("train")
+    except SplitVoidError as e:
+        print(f"SESSION ABORT: initial train eval VOID (infrastructure): {e}", file=sys.stderr)
+        sys.exit(3)
     view = evaluator.optimizer_view(train_report, champion)
     print(f"  train mean={view['train_aggregate']['mean_score']} "
           f"components={view['train_component_means']}")
@@ -118,7 +168,14 @@ def main():
                 continue
 
             print("running train split on proposal…", flush=True)
-            train_run = verifier.run_split_in_worktree(wt, "train")
+            try:
+                train_run = verifier.run_split_in_worktree(wt, "train")
+            except verifier.SplitVoid as e:
+                print(f"attempt {attempt} VOID (train, infrastructure): {e}", file=sys.stderr)
+                session.record_attempt({"attempt": attempt, "outcome": "void_infrastructure",
+                                        "phase": "train", "error": str(e)})
+                print("SESSION ABORT: fix infrastructure (credits/network), then re-run")
+                return
             t_agg = train_run["aggregate"]
             # Persist per-case run data before the worktree is removed — gate
             # decisions must be explainable case-by-case, not just in aggregate.
@@ -146,7 +203,16 @@ def main():
             session.spend_heldout_eval()
             print(f"running heldout split on proposal "
                   f"(eval {session.data['heldout_evals']}/{verifier.MAX_HELDOUT_EVALS})…", flush=True)
-            heldout_run = verifier.run_split_in_worktree(wt, "heldout")
+            try:
+                heldout_run = verifier.run_split_in_worktree(wt, "heldout")
+            except verifier.SplitVoid as e:
+                session.refund_heldout_eval(f"attempt {attempt} heldout VOID: {str(e)[:200]}")
+                print(f"attempt {attempt} VOID (heldout, infrastructure): {e}", file=sys.stderr)
+                print("heldout eval REFUNDED (void run produced zero heldout scores)")
+                session.record_attempt({"attempt": attempt, "outcome": "void_infrastructure",
+                                        "phase": "heldout", "error": str(e)})
+                print("SESSION ABORT: fix infrastructure (credits/network), then re-run")
+                return
             h_agg = heldout_run["aggregate"]
             (attempt_dir / "heldout_run.json").write_text(json.dumps(heldout_run, indent=2))
             gate_ok, reasons = verifier.gate_decision(champion, t_agg, h_agg, tests_ok)

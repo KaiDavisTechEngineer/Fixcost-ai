@@ -56,6 +56,13 @@ class HeldoutBudgetExceeded(RuntimeError):
     pass
 
 
+class SplitVoid(RuntimeError):
+    """A benchmark split in the worktree was voided by infrastructure errors
+    (billing/credit/network/timeout). No scores exist; no gate decision may be
+    made from it."""
+    pass
+
+
 class Session:
     """Tracks one optimization session; persists state so the budget survives
     crashes/restarts within the same session file."""
@@ -83,6 +90,16 @@ class Session:
                 "more attempts would leak the heldout set into the search — stop and add "
                 "new heldout cases instead")
         self.data["heldout_evals"] += 1
+        self.save()
+
+    def refund_heldout_eval(self, reason):
+        """Refund a spent eval when the heldout run was VOIDED by infrastructure.
+        A void run yields zero heldout scores, so no leakage occurred — the
+        budget exists to limit heldout exposure, not to tax network failures.
+        The refund is recorded for audit."""
+        if self.data["heldout_evals"] > 0:
+            self.data["heldout_evals"] -= 1
+        self.data.setdefault("refunds", []).append(reason)
         self.save()
 
     def record_attempt(self, record):
@@ -140,6 +157,9 @@ def run_split_in_worktree(worktree, split):
     proc = subprocess.run(
         [sys.executable, "benchmarks/run_benchmark.py", "--split", split],
         cwd=worktree, capture_output=True, text=True, timeout=7200)
+    if proc.returncode == 3:
+        raise SplitVoid(f"{split} split VOID (infrastructure error): "
+                        f"{(proc.stderr or proc.stdout)[-400:]}")
     if proc.returncode != 0:
         raise RuntimeError(f"benchmark --split {split} failed in worktree: "
                            f"{(proc.stderr or proc.stdout)[-400:]}")
