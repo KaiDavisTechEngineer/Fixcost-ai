@@ -70,6 +70,7 @@ export const DIAGNOSIS_SLUGS = [
   "transfer_case", "cvt_failure", "hybrid_battery_pack", "hybrid_inverter_coolant_pump", "hybrid_high_voltage_cable", "ev_battery_pack",
   "ev_charging_port", "ev_onboard_charger", "ev_drive_motor", "dc_dc_converter", "regenerative_braking_fault", "windshield_wiper_motor",
   "window_regulator", "door_lock_actuator", "sunroof_drain_clog", "exterior_trim_clip",
+  "transmission_range_switch",
 ];
 
 export function buildPrompt({ year, make, model, trim, problem, stateCode, lang }) {

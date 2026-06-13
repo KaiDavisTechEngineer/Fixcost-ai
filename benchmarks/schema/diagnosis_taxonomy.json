@@ -153,6 +153,7 @@
     "window_regulator",
     "door_lock_actuator",
     "sunroof_drain_clog",
-    "exterior_trim_clip"
+    "exterior_trim_clip",
+    "transmission_range_switch"
   ]
 }

@@ -1,0 +1,40 @@
+{
+  "id": "FC-0067",
+  "version": 1,
+  "vehicle": {
+    "year": 2010,
+    "make": "Nissan",
+    "model": "Altima",
+    "powertrain": "gas",
+    "mileage": 142100
+  },
+  "complaint": "I turn the key and nothing happens, no crank at all, then sometimes it starts fine if I jiggle the shifter, it feels totally unpredictable and unsafe.",
+  "observations": [
+    "No crank in Park, starts when nudged to Neutral",
+    "Brake/shifter interlock fine, neutral safety/transmission range switch reads erratic",
+    "Battery and starter test good"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "transmission_range_switch",
+    "acceptable_diagnoses": [
+      "transmission_range_switch"
+    ],
+    "wrong_but_plausible": [
+      "starter_motor",
+      "ignition_switch"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      100,
+      350
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "urgent_control",
+    "undercall_probe",
+    "no_start_crank"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13. Diagnosis slug transmission_range_switch added to taxonomy 2026-06-13 (no prior slug fit the neutral-safety/range switch; accurate fault per Kai)."
+}
