@@ -1,0 +1,44 @@
+{
+  "id": "FC-0064",
+  "version": 1,
+  "vehicle": {
+    "year": 2012,
+    "make": "Audi",
+    "model": "A4",
+    "powertrain": "gas",
+    "mileage": 118300
+  },
+  "complaint": "The check engine light came on and my mechanic friend said something about emissions, I'm worried the catalytic converter is destroyed and the car is unsafe.",
+  "observations": [
+    "Code points to EVAP small leak, light steady not flashing",
+    "Fuel cap seal cracked, purge valve clicks but holds vacuum poorly",
+    "No driveability issue, fuel trims normal, smoke test reveals leak at purge valve"
+  ],
+  "dtc_codes": [
+    "P0442",
+    "P0455"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "evap_purge_valve",
+    "acceptable_diagnoses": [
+      "evap_purge_valve",
+      "evap_leak_gas_cap",
+      "evap_canister"
+    ],
+    "wrong_but_plausible": [
+      "oxygen_sensor_downstream"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      50,
+      250
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "warning_light"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'EVAP purge valve'."
+}

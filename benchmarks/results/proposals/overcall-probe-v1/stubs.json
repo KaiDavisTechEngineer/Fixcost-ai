@@ -1,0 +1,641 @@
+{
+  "provenance": "Blind general-purpose subagent (agent a7f586d6), blind to the human-severity-v1 diff, severity anchors, and all existing cases. Scenario stubs only \u2014 NO severity/cost. Ground truth set by Kai before any model scores (Gate B labeling protocol).",
+  "alarm_types": [
+    "noise",
+    "smell_smoke",
+    "warning_light",
+    "no_start_crank",
+    "ev_specific"
+  ],
+  "stubs": [
+    {
+      "alarm_type": "noise",
+      "vehicle": {
+        "year": 2016,
+        "make": "Honda",
+        "model": "CR-V",
+        "powertrain": "gas",
+        "mileage": 88240
+      },
+      "complaint": "There's a loud grinding roar coming from the front passenger side that gets worse the faster I go, it sounds like the wheel is about to fall off and I'm scared to drive it.",
+      "observations": [
+        "Cyclic roar/hum rises with road speed, changes pitch when swerving left vs right",
+        "Play detected at front-right hub when rocked at 12 and 6 o'clock",
+        "Tire tread even, lug nuts torqued, brakes within spec"
+      ],
+      "dtc_codes": [],
+      "repair_target": "front wheel bearing",
+      "id": "FC-0056",
+      "kai_severity": "urgent",
+      "kai_cost": [
+        300,
+        600
+      ]
+    },
+    {
+      "alarm_type": "noise",
+      "vehicle": {
+        "year": 2013,
+        "make": "Ford",
+        "model": "F-150",
+        "powertrain": "gas",
+        "mileage": 121500
+      },
+      "complaint": "When I start the truck cold there's a horrible screeching squeal under the hood, it shrieks for a minute then quiets down, I'm worried the engine is tearing itself apart.",
+      "observations": [
+        "High-pitched squeal on cold start, fades as engine warms",
+        "Serpentine belt glazed with cracks on ribbed side",
+        "Belt squeal stops momentarily when accessory load applied; tensioner arm springs back slowly"
+      ],
+      "dtc_codes": [],
+      "repair_target": "serpentine belt and tensioner",
+      "id": "FC-0057",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        220,
+        410
+      ]
+    },
+    {
+      "alarm_type": "noise",
+      "vehicle": {
+        "year": 2018,
+        "make": "Subaru",
+        "model": "Outback",
+        "powertrain": "gas",
+        "mileage": 64300
+      },
+      "complaint": "Going over bumps and in turns there's a loud clunking bang from the front, it feels like something is broken and rattling around, I don't trust the steering anymore.",
+      "observations": [
+        "Repeatable clunk over expansion joints and on turn-in",
+        "Front sway bar end link bushings worn, links rattle by hand",
+        "Steering response and ball joints tight, no play in tie rods"
+      ],
+      "dtc_codes": [],
+      "repair_target": "sway bar end links",
+      "id": "FC-0058",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        70,
+        305
+      ]
+    },
+    {
+      "alarm_type": "smell_smoke",
+      "vehicle": {
+        "year": 2014,
+        "make": "Toyota",
+        "model": "Camry",
+        "powertrain": "gas",
+        "mileage": 109800
+      },
+      "complaint": "A sweet syrupy smell keeps coming through the vents and the windshield fogs up on the inside, sometimes I see a little haze, I'm afraid the car is going to catch fire.",
+      "observations": [
+        "Sweet coolant odor strongest with heat/defrost on",
+        "Greasy film on inside of windshield, slow coolant loss with no external leak",
+        "Passenger floor carpet slightly damp"
+      ],
+      "dtc_codes": [],
+      "repair_target": "heater core",
+      "id": "FC-0059",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        500,
+        1200
+      ]
+    },
+    {
+      "alarm_type": "smell_smoke",
+      "vehicle": {
+        "year": 2011,
+        "make": "BMW",
+        "model": "328i",
+        "powertrain": "gas",
+        "mileage": 134600
+      },
+      "complaint": "I keep smelling burning oil and there's a faint wisp of smoke from under the hood after I park, it smells hot and scary like it could ignite.",
+      "observations": [
+        "Oil weeping onto exhaust manifold burns off as light smoke after shutdown",
+        "Valve cover gasket saturated, oil pooled at spark plug tube seals",
+        "No active coolant or fuel leak, oil level slightly low"
+      ],
+      "dtc_codes": [],
+      "repair_target": "valve cover gasket",
+      "id": "FC-0060",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        400,
+        1000
+      ]
+    },
+    {
+      "alarm_type": "smell_smoke",
+      "vehicle": {
+        "year": 2017,
+        "make": "Volkswagen",
+        "model": "Jetta",
+        "powertrain": "gas",
+        "mileage": 71200
+      },
+      "complaint": "When I turn on the heater or AC there's an electrical burning plastic smell and the fan only blows on the highest setting, I shut it off because I thought it would start a fire.",
+      "observations": [
+        "Hot electrical odor at vents, blower runs only on speed 4",
+        "Blower resistor connector discolored/heat-scorched",
+        "No fan output on speeds 1-3, fan motor itself spins freely"
+      ],
+      "dtc_codes": [],
+      "repair_target": "blower motor resistor",
+      "id": "FC-0061",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        90,
+        175
+      ]
+    },
+    {
+      "alarm_type": "warning_light",
+      "vehicle": {
+        "year": 2019,
+        "make": "Chevrolet",
+        "model": "Equinox",
+        "powertrain": "gas",
+        "mileage": 52400
+      },
+      "complaint": "The check engine light started flashing and the car felt like it stumbled, the dashboard is lit up and I'm terrified to keep driving it.",
+      "observations": [
+        "Misfire counts on cylinder 3, light flashes under load then goes steady",
+        "Ignition coil on cyl 3 reads out of spec, plugs overdue",
+        "Smooths out at idle, runs rough only on acceleration"
+      ],
+      "dtc_codes": [
+        "P0303",
+        "P0300"
+      ],
+      "repair_target": "ignition coil and spark plugs",
+      "id": "FC-0062",
+      "kai_severity": "urgent",
+      "kai_cost": [
+        150,
+        500
+      ]
+    },
+    {
+      "alarm_type": "warning_light",
+      "vehicle": {
+        "year": 2015,
+        "make": "Mazda",
+        "model": "CX-5",
+        "powertrain": "gas",
+        "mileage": 96700
+      },
+      "complaint": "A big red battery warning lit up on my dash and the headlights seem dimmer, I'm panicking that the car is going to die on me in the middle of the road.",
+      "observations": [
+        "Charging voltage at idle reads ~12.3V, drops under load",
+        "Serpentine belt intact, alternator output low, slight bearing growl from alternator",
+        "Battery holds surface charge, no parasitic drain found"
+      ],
+      "dtc_codes": [
+        "P0562"
+      ],
+      "repair_target": "alternator",
+      "id": "FC-0063",
+      "kai_severity": "urgent",
+      "kai_cost": [
+        400,
+        1000
+      ]
+    },
+    {
+      "alarm_type": "warning_light",
+      "vehicle": {
+        "year": 2012,
+        "make": "Audi",
+        "model": "A4",
+        "powertrain": "gas",
+        "mileage": 118300
+      },
+      "complaint": "The check engine light came on and my mechanic friend said something about emissions, I'm worried the catalytic converter is destroyed and the car is unsafe.",
+      "observations": [
+        "Code points to EVAP small leak, light steady not flashing",
+        "Fuel cap seal cracked, purge valve clicks but holds vacuum poorly",
+        "No driveability issue, fuel trims normal, smoke test reveals leak at purge valve"
+      ],
+      "dtc_codes": [
+        "P0442",
+        "P0455"
+      ],
+      "repair_target": "EVAP purge valve",
+      "id": "FC-0064",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        50,
+        250
+      ]
+    },
+    {
+      "alarm_type": "no_start_crank",
+      "vehicle": {
+        "year": 2014,
+        "make": "Jeep",
+        "model": "Grand Cherokee",
+        "powertrain": "gas",
+        "mileage": 102900
+      },
+      "complaint": "This morning the car just clicked rapidly and wouldn't start, all the lights flickered and I thought the whole electrical system was fried.",
+      "observations": [
+        "Rapid clicking on key, no crank; jump start fires immediately",
+        "Battery tests bad with high internal resistance, ~5 years old",
+        "Terminals show corrosion buildup, alternator charges correctly once running"
+      ],
+      "dtc_codes": [],
+      "repair_target": "battery",
+      "id": "FC-0065",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        100,
+        300
+      ]
+    },
+    {
+      "alarm_type": "no_start_crank",
+      "vehicle": {
+        "year": 2016,
+        "make": "Hyundai",
+        "model": "Sonata",
+        "powertrain": "gas",
+        "mileage": 78600
+      },
+      "complaint": "Sometimes when I turn the key the engine cranks but takes forever to catch, and twice it almost died pulling away, I'm scared it will leave me stranded.",
+      "observations": [
+        "Extended crank when hot, normal start when cold",
+        "Fuel rail pressure bleeds down after shutoff, leak-down at injector",
+        "Long-term fuel trim slightly rich, no spark issues"
+      ],
+      "dtc_codes": [
+        "P0480"
+      ],
+      "repair_target": "fuel injector",
+      "id": "FC-0066",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        300,
+        600
+      ]
+    },
+    {
+      "alarm_type": "no_start_crank",
+      "vehicle": {
+        "year": 2010,
+        "make": "Nissan",
+        "model": "Altima",
+        "powertrain": "gas",
+        "mileage": 142100
+      },
+      "complaint": "I turn the key and nothing happens, no crank at all, then sometimes it starts fine if I jiggle the shifter, it feels totally unpredictable and unsafe.",
+      "observations": [
+        "No crank in Park, starts when nudged to Neutral",
+        "Brake/shifter interlock fine, neutral safety/transmission range switch reads erratic",
+        "Battery and starter test good"
+      ],
+      "dtc_codes": [],
+      "repair_target": "transmission range (neutral safety) switch",
+      "id": "FC-0067",
+      "kai_severity": "urgent",
+      "kai_cost": [
+        100,
+        350
+      ]
+    },
+    {
+      "alarm_type": "ev_specific",
+      "vehicle": {
+        "year": 2019,
+        "make": "Nissan",
+        "model": "Leaf",
+        "powertrain": "ev",
+        "mileage": 47800
+      },
+      "complaint": "My car suddenly flashed a 'Power Reduced' turtle light and slowed way down on the highway, then it came back, I'm terrified the whole battery is dying.",
+      "observations": [
+        "Turtle/reduced-power event correlates with high pack temperature after fast-charging",
+        "No DTC for cell imbalance; battery state of health acceptable for age",
+        "Air-cooled pack heat-soaked, behavior normal once cooled but flagged for inspection"
+      ],
+      "dtc_codes": [],
+      "repair_target": "battery thermal management inspection / cooling",
+      "id": "FC-0068",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        0,
+        150
+      ]
+    },
+    {
+      "alarm_type": "ev_specific",
+      "vehicle": {
+        "year": 2018,
+        "make": "Chevrolet",
+        "model": "Bolt EV",
+        "powertrain": "ev",
+        "mileage": 61500
+      },
+      "complaint": "The car won't charge from my home outlet at all anymore and I get a charging error, I'm scared the battery or charger is destroyed and the car is now useless.",
+      "observations": [
+        "No AC charge accepted on Level 1; DC fast charge still works",
+        "Onboard charger module reports fault, 12V accessory battery weak",
+        "Charge port and EVSE test good on another vehicle"
+      ],
+      "dtc_codes": [
+        "P0A1A"
+      ],
+      "repair_target": "onboard charger module",
+      "id": "FC-0069",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        850,
+        1500
+      ]
+    },
+    {
+      "alarm_type": "ev_specific",
+      "vehicle": {
+        "year": 2020,
+        "make": "Toyota",
+        "model": "RAV4 Prime",
+        "powertrain": "hybrid",
+        "mileage": 39400
+      },
+      "complaint": "A red hybrid system warning came on with a 'Check Hybrid System' message and the car beeped at me, I'm afraid to drive it thinking the battery could catch fire.",
+      "observations": [
+        "Warning triggered by 12V auxiliary battery undervoltage, not the HV pack",
+        "12V battery tests weak/old, HV system codes absent",
+        "EV and hybrid drive function normal after 12V recharge, intermittent message on cold mornings"
+      ],
+      "dtc_codes": [
+        "P0A80"
+      ],
+      "repair_target": "12V auxiliary battery",
+      "id": "FC-0070",
+      "kai_severity": "moderate",
+      "kai_cost": [
+        150,
+        350
+      ]
+    }
+  ],
+  "labeling": "Kai domain review 2026-06-13, BEFORE any model scored (blind both directions). FC-0068 flagged by Kai as info-lean (borderline).",
+  "batch2_refill": {
+    "provenance": "Second blind subagent (agent abe383ac), blind to diff/anchors/all existing cases; weighted to depleted types; calibration-sharpened from Kai's batch-1 labels (domain facts only).",
+    "stubs": [
+      {
+        "alarm_type": "noise",
+        "vehicle": {
+          "year": 2015,
+          "make": "Subaru",
+          "model": "Outback",
+          "powertrain": "gas",
+          "mileage": 98400
+        },
+        "complaint": "There's a horrible loud squealing screech from the front of the engine, especially when I start it cold or turn the wheel hard. It sounds like something is about to fly apart and I'm scared to drive it.",
+        "observations": [
+          "Serpentine belt shows glazing and cracking on the ribbed underside",
+          "Squeal pitch rises with engine RPM and improves when belt dressing is briefly applied",
+          "Belt tensioner moves freely with no abnormal bearing noise"
+        ],
+        "dtc_codes": [],
+        "repair_target": "serpentine accessory drive belt replacement",
+        "id": "FC-0071"
+      },
+      {
+        "alarm_type": "noise",
+        "vehicle": {
+          "year": 2012,
+          "make": "Honda",
+          "model": "Accord",
+          "powertrain": "gas",
+          "mileage": 141200
+        },
+        "complaint": "Whenever I turn on the heat or AC, there's a loud rattling and buzzing noise behind the dash like a fan is grinding itself to pieces. It's getting worse and the noise really worries me.",
+        "observations": [
+          "Noise tracks directly with blower fan speed setting and stops when blower is off",
+          "Debris and a partially shredded leaf visible at the blower motor cage intake",
+          "Blower motor bearing exhibits a slight wobble when spun by hand"
+        ],
+        "dtc_codes": [],
+        "repair_target": "HVAC blower motor and cabin air filter replacement",
+        "id": "FC-0072",
+        "kai_severity": "moderate",
+        "kai_cost": [
+          300,
+          550
+        ]
+      },
+      {
+        "alarm_type": "no_start_crank",
+        "vehicle": {
+          "year": 2017,
+          "make": "Ford",
+          "model": "Escape",
+          "powertrain": "gas",
+          "mileage": 76800
+        },
+        "complaint": "This morning the car wouldn't start, just a rapid clicking and the dash lights flickered like crazy. I jumped it and it fired right up, but I'm terrified it's going to leave me stranded.",
+        "observations": [
+          "Battery tested at reduced cold-cranking amps and failed load test",
+          "Battery date sticker indicates original factory unit, roughly six years old",
+          "Charging system output measured within normal range at idle and under load"
+        ],
+        "dtc_codes": [],
+        "repair_target": "12V starting battery replacement",
+        "id": "FC-0073",
+        "kai_severity": "moderate",
+        "kai_cost": [
+          150,
+          350
+        ]
+      },
+      {
+        "alarm_type": "no_start_crank",
+        "vehicle": {
+          "year": 2010,
+          "make": "Toyota",
+          "model": "Camry",
+          "powertrain": "gas",
+          "mileage": 167500
+        },
+        "complaint": "Sometimes when I press the start button nothing happens at all, no crank, totally dead, then a minute later it starts fine. It feels like the car is dying and I don't trust it anymore.",
+        "observations": [
+          "No-crank condition resolves when key is jiggled or twisted slightly in the cylinder",
+          "Voltage drop measured across battery terminal clamps under cranking attempt",
+          "Negative terminal clamp shows green corrosion and is loose to the touch"
+        ],
+        "dtc_codes": [],
+        "repair_target": "corroded battery cable terminal clamp replacement",
+        "id": "FC-0074",
+        "kai_severity": "moderate",
+        "kai_cost": [
+          50,
+          200
+        ]
+      },
+      {
+        "alarm_type": "ev_specific",
+        "vehicle": {
+          "year": 2019,
+          "make": "Nissan",
+          "model": "Leaf",
+          "powertrain": "ev",
+          "mileage": 52300
+        },
+        "complaint": "My car suddenly refuses to charge on my home Level 2 charger, it just throws an error and stops, which freaked me out. The public fast charger still works so I can get around, but something is clearly wrong.",
+        "observations": [
+          "Level 1 and DC fast charging both initiate and complete normally",
+          "Onboard AC charging module fails handshake only on 240V Level 2 sessions",
+          "No high-voltage battery fault stored; isolation and pack health read normal"
+        ],
+        "dtc_codes": [],
+        "repair_target": "onboard AC charger module (Level 2) repair",
+        "id": "FC-0075",
+        "kai_severity": "moderate",
+        "kai_cost": [
+          900,
+          1800
+        ]
+      },
+      {
+        "alarm_type": "ev_specific",
+        "vehicle": {
+          "year": 2021,
+          "make": "Chevrolet",
+          "model": "Bolt EV",
+          "powertrain": "ev",
+          "mileage": 38900
+        },
+        "complaint": "A scary orange car-with-exclamation-mark warning keeps popping up and my dash says the cooling fans are running loud even when parked. I'm worried the battery is overheating and could be dangerous.",
+        "observations": [
+          "Battery coolant reservoir found below minimum cold-fill line",
+          "Slow weep and dried coolant residue at a thermal-loop hose clamp fitting",
+          "Pack temperatures and state-of-charge remain within normal operating range"
+        ],
+        "dtc_codes": [
+          "P0AA6"
+        ],
+        "repair_target": "battery thermal-management coolant hose clamp and refill",
+        "id": "FC-0076",
+        "kai_severity": "urgent",
+        "kai_cost": [
+          150,
+          450
+        ]
+      },
+      {
+        "alarm_type": "warning_light",
+        "vehicle": {
+          "year": 2016,
+          "make": "Volkswagen",
+          "model": "Jetta",
+          "powertrain": "gas",
+          "mileage": 89300
+        },
+        "complaint": "My check engine light came on solid right after I filled up at the gas station, and the car feels totally normal but the light has me really anxious it's something major.",
+        "observations": [
+          "Light appeared immediately following a refuel; gas cap was found loose",
+          "EVAP system small-leak code present with no driveability symptoms",
+          "Smoke test reveals seepage at the purge valve seal, not the tank or lines"
+        ],
+        "dtc_codes": [
+          "P0456"
+        ],
+        "repair_target": "EVAP purge valve replacement",
+        "id": "FC-0077",
+        "kai_severity": "moderate",
+        "kai_cost": [
+          50,
+          250
+        ]
+      },
+      {
+        "alarm_type": "warning_light",
+        "vehicle": {
+          "year": 2018,
+          "make": "Hyundai",
+          "model": "Tucson",
+          "powertrain": "gas",
+          "mileage": 71400
+        },
+        "complaint": "The ABS and traction control lights both lit up on the dash and stayed on, and now I'm scared my brakes are going to fail on me while I'm driving.",
+        "observations": [
+          "Normal hydraulic braking and pedal feel fully retained; only ABS function disabled",
+          "Fault isolates to a single front wheel-speed sensor circuit",
+          "Sensor tone-ring reluctor area shows debris buildup and an intermittent signal"
+        ],
+        "dtc_codes": [
+          "C0035"
+        ],
+        "repair_target": "front ABS wheel-speed sensor replacement",
+        "id": "FC-0078"
+      }
+    ],
+    "overlap_flags": {
+      "FC-0071": "serpentine belt -> DUP of FC-0057 (cluster)",
+      "FC-0073": "battery no-start -> DUP of FC-0065 (cluster)",
+      "FC-0074": "battery-cable no-start -> near-dup of FC-0065 (cluster); 3rd battery no-start overall",
+      "FC-0075": "onboard charger -> DUP of FC-0069 (cluster)",
+      "FC-0077": "EVAP purge valve -> DUP of FC-0064 (cluster), same repair_target",
+      "FC-0078": "ABS wheel-speed sensor (C0035) -> DUP of existing heldout FC-0049 (Ford Edge, same fault+code)"
+    }
+  },
+  "policy": {
+    "selection": "A/representativeness (Kai 2026-06-13): accept archetype repeats with distinct vehicles/presentations; CAP any single archetype at 3 of the cluster. The cap, not unique-faults, prevents domination.",
+    "finding_archetype_concentration": "loud-but-moderate concentrates in ~6 archetypes (batteries, belts, HVAC, EVAP, chargers, sensors). After 23 blind stubs the genuinely-moderate ones keep landing in this small set; the cluster mirrors that real distribution rather than padding with contrived rare faults.",
+    "finding_warning_light_scarcity": "warning_light loud-but-moderate is genuinely rare (scary dashboard lights usually = urgent): only 1 of 3 batch-1 warning_light cases (FC-0064) survived as moderate.",
+    "dropped_pre_label": {
+      "FC-0071": "serpentine belt \u2014 too close to FC-0057, no new presentation",
+      "FC-0078": "ABS sensor C0035 \u2014 duplicates HEADLINE case FC-0049; same fault in probe+base breaks the independent-refresh separation"
+    },
+    "to_label": [
+      "FC-0072",
+      "FC-0073",
+      "FC-0074",
+      "FC-0075",
+      "FC-0076",
+      "FC-0077"
+    ],
+    "cap_watch": "battery archetype at cap if both FC-0073 + FC-0074 label moderate (FC-0065+0073+0074=3). Do not exceed."
+  },
+  "lock": {
+    "date": "2026-06-13",
+    "cluster_15": [
+      "FC-0057",
+      "FC-0058",
+      "FC-0059",
+      "FC-0060",
+      "FC-0061",
+      "FC-0064",
+      "FC-0065",
+      "FC-0066",
+      "FC-0069",
+      "FC-0070",
+      "FC-0072",
+      "FC-0073",
+      "FC-0074",
+      "FC-0075",
+      "FC-0077"
+    ],
+    "urgent_control_arm": [
+      "FC-0056",
+      "FC-0062",
+      "FC-0063",
+      "FC-0076",
+      "FC-0067(HELD-no-slug)"
+    ],
+    "FC-0076": "Kai labeled urgent -> moved from cluster to urgent-control arm",
+    "FC-0067": "HELD: neutral-safety/transmission-range switch has no taxonomy slug; pending Kai ruling at eyeball",
+    "power": "n=15, rule>=3: power(.30)=0.873, FA(.05)=0.036",
+    "open_flags": {
+      "FC-0074": "slug ground_strap_corroded (nearest fit, confirm)",
+      "FC-0076": "slug coolant_leak + must_safety=true (confirm)",
+      "FC-0069/FC-0075": "must_safety=true HV charger"
+    }
+  }
+}

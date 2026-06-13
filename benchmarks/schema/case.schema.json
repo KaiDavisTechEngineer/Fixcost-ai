@@ -74,6 +74,11 @@
     "tags": {
       "type": "array",
       "items": { "type": "string", "minLength": 1, "maxLength": 40 }
+    },
+    "provenance": {
+      "type": "string",
+      "maxLength": 600,
+      "description": "Optional: how this case and its ground-truth labels were sourced (author, labeler, rule). Not required; existing cases omit it."
     }
   }
 }

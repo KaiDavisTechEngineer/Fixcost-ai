@@ -1,0 +1,43 @@
+{
+  "id": "FC-0070",
+  "version": 1,
+  "vehicle": {
+    "year": 2020,
+    "make": "Toyota",
+    "model": "RAV4 Prime",
+    "powertrain": "hybrid",
+    "mileage": 39400
+  },
+  "complaint": "A red hybrid system warning came on with a 'Check Hybrid System' message and the car beeped at me, I'm afraid to drive it thinking the battery could catch fire.",
+  "observations": [
+    "Warning triggered by 12V auxiliary battery undervoltage, not the HV pack",
+    "12V battery tests weak/old, HV system codes absent",
+    "EV and hybrid drive function normal after 12V recharge, intermittent message on cold mornings"
+  ],
+  "dtc_codes": [
+    "P0A80"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "battery_weak",
+    "acceptable_diagnoses": [
+      "battery_weak",
+      "battery_dead"
+    ],
+    "wrong_but_plausible": [
+      "dc_dc_converter",
+      "hybrid_battery_pack"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      350
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "ev_specific"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target '12V auxiliary battery'."
+}

@@ -1,0 +1,41 @@
+{
+  "id": "FC-0058",
+  "version": 1,
+  "vehicle": {
+    "year": 2018,
+    "make": "Subaru",
+    "model": "Outback",
+    "powertrain": "gas",
+    "mileage": 64300
+  },
+  "complaint": "Going over bumps and in turns there's a loud clunking bang from the front, it feels like something is broken and rattling around, I don't trust the steering anymore.",
+  "observations": [
+    "Repeatable clunk over expansion joints and on turn-in",
+    "Front sway bar end link bushings worn, links rattle by hand",
+    "Steering response and ball joints tight, no play in tie rods"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "sway_bar_end_link",
+    "acceptable_diagnoses": [
+      "sway_bar_end_link",
+      "sway_bar_bushing"
+    ],
+    "wrong_but_plausible": [
+      "strut_mount",
+      "control_arm_bushing"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      70,
+      305
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "noise"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'sway bar end links'."
+}

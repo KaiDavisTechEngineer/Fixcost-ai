@@ -1,0 +1,40 @@
+{
+  "id": "FC-0059",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "Toyota",
+    "model": "Camry",
+    "powertrain": "gas",
+    "mileage": 109800
+  },
+  "complaint": "A sweet syrupy smell keeps coming through the vents and the windshield fogs up on the inside, sometimes I see a little haze, I'm afraid the car is going to catch fire.",
+  "observations": [
+    "Sweet coolant odor strongest with heat/defrost on",
+    "Greasy film on inside of windshield, slow coolant loss with no external leak",
+    "Passenger floor carpet slightly damp"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "heater_core",
+    "acceptable_diagnoses": [
+      "heater_core"
+    ],
+    "wrong_but_plausible": [
+      "coolant_leak",
+      "radiator_hose_leak"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      500,
+      1200
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "smell_smoke"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'heater core'."
+}

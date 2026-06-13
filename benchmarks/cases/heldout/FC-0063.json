@@ -1,0 +1,42 @@
+{
+  "id": "FC-0063",
+  "version": 1,
+  "vehicle": {
+    "year": 2015,
+    "make": "Mazda",
+    "model": "CX-5",
+    "powertrain": "gas",
+    "mileage": 96700
+  },
+  "complaint": "A big red battery warning lit up on my dash and the headlights seem dimmer, I'm panicking that the car is going to die on me in the middle of the road.",
+  "observations": [
+    "Charging voltage at idle reads ~12.3V, drops under load",
+    "Serpentine belt intact, alternator output low, slight bearing growl from alternator",
+    "Battery holds surface charge, no parasitic drain found"
+  ],
+  "dtc_codes": [
+    "P0562"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "alternator",
+    "acceptable_diagnoses": [
+      "alternator"
+    ],
+    "wrong_but_plausible": [
+      "battery_weak",
+      "battery_dead"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      400,
+      1000
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "urgent_control",
+    "undercall_probe",
+    "warning_light"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'alternator'."
+}

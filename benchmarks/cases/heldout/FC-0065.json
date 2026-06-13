@@ -1,0 +1,41 @@
+{
+  "id": "FC-0065",
+  "version": 1,
+  "vehicle": {
+    "year": 2014,
+    "make": "Jeep",
+    "model": "Grand Cherokee",
+    "powertrain": "gas",
+    "mileage": 102900
+  },
+  "complaint": "This morning the car just clicked rapidly and wouldn't start, all the lights flickered and I thought the whole electrical system was fried.",
+  "observations": [
+    "Rapid clicking on key, no crank; jump start fires immediately",
+    "Battery tests bad with high internal resistance, ~5 years old",
+    "Terminals show corrosion buildup, alternator charges correctly once running"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "battery_dead",
+    "acceptable_diagnoses": [
+      "battery_dead",
+      "battery_weak"
+    ],
+    "wrong_but_plausible": [
+      "starter_motor",
+      "alternator"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      100,
+      300
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "no_start_crank"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'battery'."
+}

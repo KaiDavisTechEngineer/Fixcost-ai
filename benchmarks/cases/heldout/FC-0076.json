@@ -1,0 +1,43 @@
+{
+  "id": "FC-0076",
+  "version": 1,
+  "vehicle": {
+    "year": 2021,
+    "make": "Chevrolet",
+    "model": "Bolt EV",
+    "powertrain": "ev",
+    "mileage": 38900
+  },
+  "complaint": "A scary orange car-with-exclamation-mark warning keeps popping up and my dash says the cooling fans are running loud even when parked. I'm worried the battery is overheating and could be dangerous.",
+  "observations": [
+    "Battery coolant reservoir found below minimum cold-fill line",
+    "Slow weep and dried coolant residue at a thermal-loop hose clamp fitting",
+    "Pack temperatures and state-of-charge remain within normal operating range"
+  ],
+  "dtc_codes": [
+    "P0AA6"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "coolant_leak",
+    "acceptable_diagnoses": [
+      "coolant_leak",
+      "radiator_hose_leak"
+    ],
+    "wrong_but_plausible": [
+      "ev_battery_pack",
+      "hybrid_inverter_coolant_pump"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      150,
+      450
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "urgent_control",
+    "undercall_probe",
+    "ev_specific"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'battery thermal-management coolant hose clamp and refill'."
+}

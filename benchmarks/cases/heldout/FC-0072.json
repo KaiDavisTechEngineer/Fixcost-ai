@@ -1,0 +1,40 @@
+{
+  "id": "FC-0072",
+  "version": 1,
+  "vehicle": {
+    "year": 2012,
+    "make": "Honda",
+    "model": "Accord",
+    "powertrain": "gas",
+    "mileage": 141200
+  },
+  "complaint": "Whenever I turn on the heat or AC, there's a loud rattling and buzzing noise behind the dash like a fan is grinding itself to pieces. It's getting worse and the noise really worries me.",
+  "observations": [
+    "Noise tracks directly with blower fan speed setting and stops when blower is off",
+    "Debris and a partially shredded leaf visible at the blower motor cage intake",
+    "Blower motor bearing exhibits a slight wobble when spun by hand"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "blower_motor",
+    "acceptable_diagnoses": [
+      "blower_motor",
+      "cabin_air_filter"
+    ],
+    "wrong_but_plausible": [
+      "blower_motor_resistor"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      300,
+      550
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "noise"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'HVAC blower motor and cabin air filter replacement'."
+}

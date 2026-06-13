@@ -1,0 +1,41 @@
+{
+  "id": "FC-0057",
+  "version": 1,
+  "vehicle": {
+    "year": 2013,
+    "make": "Ford",
+    "model": "F-150",
+    "powertrain": "gas",
+    "mileage": 121500
+  },
+  "complaint": "When I start the truck cold there's a horrible screeching squeal under the hood, it shrieks for a minute then quiets down, I'm worried the engine is tearing itself apart.",
+  "observations": [
+    "High-pitched squeal on cold start, fades as engine warms",
+    "Serpentine belt glazed with cracks on ribbed side",
+    "Belt squeal stops momentarily when accessory load applied; tensioner arm springs back slowly"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "serpentine_belt",
+    "acceptable_diagnoses": [
+      "serpentine_belt",
+      "belt_tensioner"
+    ],
+    "wrong_but_plausible": [
+      "idler_pulley",
+      "power_steering_pump"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      220,
+      410
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "noise"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'serpentine belt and tensioner'."
+}

@@ -1,0 +1,40 @@
+{
+  "id": "FC-0074",
+  "version": 1,
+  "vehicle": {
+    "year": 2010,
+    "make": "Toyota",
+    "model": "Camry",
+    "powertrain": "gas",
+    "mileage": 167500
+  },
+  "complaint": "Sometimes when I press the start button nothing happens at all, no crank, totally dead, then a minute later it starts fine. It feels like the car is dying and I don't trust it anymore.",
+  "observations": [
+    "No-crank condition resolves when key is jiggled or twisted slightly in the cylinder",
+    "Voltage drop measured across battery terminal clamps under cranking attempt",
+    "Negative terminal clamp shows green corrosion and is loose to the touch"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "ground_strap_corroded",
+    "acceptable_diagnoses": [
+      "ground_strap_corroded"
+    ],
+    "wrong_but_plausible": [
+      "battery_dead",
+      "ignition_switch"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      50,
+      200
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "no_start_crank"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'corroded battery cable terminal clamp replacement'."
+}

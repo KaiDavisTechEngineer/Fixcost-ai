@@ -1,0 +1,40 @@
+{
+  "id": "FC-0075",
+  "version": 1,
+  "vehicle": {
+    "year": 2019,
+    "make": "Nissan",
+    "model": "Leaf",
+    "powertrain": "ev",
+    "mileage": 52300
+  },
+  "complaint": "My car suddenly refuses to charge on my home Level 2 charger, it just throws an error and stops, which freaked me out. The public fast charger still works so I can get around, but something is clearly wrong.",
+  "observations": [
+    "Level 1 and DC fast charging both initiate and complete normally",
+    "Onboard AC charging module fails handshake only on 240V Level 2 sessions",
+    "No high-voltage battery fault stored; isolation and pack health read normal"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "ev_onboard_charger",
+    "acceptable_diagnoses": [
+      "ev_onboard_charger"
+    ],
+    "wrong_but_plausible": [
+      "ev_charging_port",
+      "dc_dc_converter"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      900,
+      1800
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "ev_specific"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'onboard AC charger module (Level 2) repair'."
+}

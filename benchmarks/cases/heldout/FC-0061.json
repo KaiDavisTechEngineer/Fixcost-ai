@@ -1,0 +1,39 @@
+{
+  "id": "FC-0061",
+  "version": 1,
+  "vehicle": {
+    "year": 2017,
+    "make": "Volkswagen",
+    "model": "Jetta",
+    "powertrain": "gas",
+    "mileage": 71200
+  },
+  "complaint": "When I turn on the heater or AC there's an electrical burning plastic smell and the fan only blows on the highest setting, I shut it off because I thought it would start a fire.",
+  "observations": [
+    "Hot electrical odor at vents, blower runs only on speed 4",
+    "Blower resistor connector discolored/heat-scorched",
+    "No fan output on speeds 1-3, fan motor itself spins freely"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "blower_motor_resistor",
+    "acceptable_diagnoses": [
+      "blower_motor_resistor"
+    ],
+    "wrong_but_plausible": [
+      "blower_motor"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      90,
+      175
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "smell_smoke"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'blower motor resistor'."
+}

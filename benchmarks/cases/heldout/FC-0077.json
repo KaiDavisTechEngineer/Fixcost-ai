@@ -1,0 +1,43 @@
+{
+  "id": "FC-0077",
+  "version": 1,
+  "vehicle": {
+    "year": 2016,
+    "make": "Volkswagen",
+    "model": "Jetta",
+    "powertrain": "gas",
+    "mileage": 89300
+  },
+  "complaint": "My check engine light came on solid right after I filled up at the gas station, and the car feels totally normal but the light has me really anxious it's something major.",
+  "observations": [
+    "Light appeared immediately following a refuel; gas cap was found loose",
+    "EVAP system small-leak code present with no driveability symptoms",
+    "Smoke test reveals seepage at the purge valve seal, not the tank or lines"
+  ],
+  "dtc_codes": [
+    "P0456"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "evap_purge_valve",
+    "acceptable_diagnoses": [
+      "evap_purge_valve",
+      "evap_leak_gas_cap",
+      "evap_canister"
+    ],
+    "wrong_but_plausible": [
+      "oxygen_sensor_downstream"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      50,
+      250
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "warning_light"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'EVAP purge valve replacement'."
+}

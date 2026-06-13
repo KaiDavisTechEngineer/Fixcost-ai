@@ -1,0 +1,42 @@
+{
+  "id": "FC-0066",
+  "version": 1,
+  "vehicle": {
+    "year": 2016,
+    "make": "Hyundai",
+    "model": "Sonata",
+    "powertrain": "gas",
+    "mileage": 78600
+  },
+  "complaint": "Sometimes when I turn the key the engine cranks but takes forever to catch, and twice it almost died pulling away, I'm scared it will leave me stranded.",
+  "observations": [
+    "Extended crank when hot, normal start when cold",
+    "Fuel rail pressure bleeds down after shutoff, leak-down at injector",
+    "Long-term fuel trim slightly rich, no spark issues"
+  ],
+  "dtc_codes": [
+    "P0480"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "fuel_injector",
+    "acceptable_diagnoses": [
+      "fuel_injector"
+    ],
+    "wrong_but_plausible": [
+      "fuel_pump",
+      "crankshaft_position_sensor"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      300,
+      600
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "no_start_crank"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'fuel injector'."
+}

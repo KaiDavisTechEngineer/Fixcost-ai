@@ -1,0 +1,41 @@
+{
+  "id": "FC-0056",
+  "version": 1,
+  "vehicle": {
+    "year": 2016,
+    "make": "Honda",
+    "model": "CR-V",
+    "powertrain": "gas",
+    "mileage": 88240
+  },
+  "complaint": "There's a loud grinding roar coming from the front passenger side that gets worse the faster I go, it sounds like the wheel is about to fall off and I'm scared to drive it.",
+  "observations": [
+    "Cyclic roar/hum rises with road speed, changes pitch when swerving left vs right",
+    "Play detected at front-right hub when rocked at 12 and 6 o'clock",
+    "Tire tread even, lug nuts torqued, brakes within spec"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "wheel_bearing_front_right",
+    "acceptable_diagnoses": [
+      "wheel_bearing_front_right",
+      "wheel_bearing_front"
+    ],
+    "wrong_but_plausible": [
+      "cv_axle",
+      "brake_pads_front"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      300,
+      600
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "urgent_control",
+    "undercall_probe",
+    "noise"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'front wheel bearing'."
+}

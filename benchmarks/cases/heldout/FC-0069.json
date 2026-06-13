@@ -1,0 +1,42 @@
+{
+  "id": "FC-0069",
+  "version": 1,
+  "vehicle": {
+    "year": 2018,
+    "make": "Chevrolet",
+    "model": "Bolt EV",
+    "powertrain": "ev",
+    "mileage": 61500
+  },
+  "complaint": "The car won't charge from my home outlet at all anymore and I get a charging error, I'm scared the battery or charger is destroyed and the car is now useless.",
+  "observations": [
+    "No AC charge accepted on Level 1; DC fast charge still works",
+    "Onboard charger module reports fault, 12V accessory battery weak",
+    "Charge port and EVSE test good on another vehicle"
+  ],
+  "dtc_codes": [
+    "P0A1A"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "ev_onboard_charger",
+    "acceptable_diagnoses": [
+      "ev_onboard_charger"
+    ],
+    "wrong_but_plausible": [
+      "ev_charging_port",
+      "dc_dc_converter"
+    ],
+    "must_mention_safety": true,
+    "expected_cost_range_usd": [
+      850,
+      1500
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "ev_specific"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'onboard charger module'."
+}

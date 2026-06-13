@@ -1,0 +1,44 @@
+{
+  "id": "FC-0062",
+  "version": 1,
+  "vehicle": {
+    "year": 2019,
+    "make": "Chevrolet",
+    "model": "Equinox",
+    "powertrain": "gas",
+    "mileage": 52400
+  },
+  "complaint": "The check engine light started flashing and the car felt like it stumbled, the dashboard is lit up and I'm terrified to keep driving it.",
+  "observations": [
+    "Misfire counts on cylinder 3, light flashes under load then goes steady",
+    "Ignition coil on cyl 3 reads out of spec, plugs overdue",
+    "Smooths out at idle, runs rough only on acceleration"
+  ],
+  "dtc_codes": [
+    "P0303",
+    "P0300"
+  ],
+  "ground_truth": {
+    "primary_diagnosis": "ignition_coil",
+    "acceptable_diagnoses": [
+      "ignition_coil",
+      "spark_plugs"
+    ],
+    "wrong_but_plausible": [
+      "fuel_injector",
+      "vacuum_leak"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      500
+    ],
+    "severity": "urgent"
+  },
+  "tags": [
+    "urgent_control",
+    "undercall_probe",
+    "warning_light"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target 'ignition coil and spark plugs'."
+}

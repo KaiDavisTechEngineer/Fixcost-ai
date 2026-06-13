@@ -1,0 +1,41 @@
+{
+  "id": "FC-0073",
+  "version": 1,
+  "vehicle": {
+    "year": 2017,
+    "make": "Ford",
+    "model": "Escape",
+    "powertrain": "gas",
+    "mileage": 76800
+  },
+  "complaint": "This morning the car wouldn't start, just a rapid clicking and the dash lights flickered like crazy. I jumped it and it fired right up, but I'm terrified it's going to leave me stranded.",
+  "observations": [
+    "Battery tested at reduced cold-cranking amps and failed load test",
+    "Battery date sticker indicates original factory unit, roughly six years old",
+    "Charging system output measured within normal range at idle and under load"
+  ],
+  "dtc_codes": [],
+  "ground_truth": {
+    "primary_diagnosis": "battery_weak",
+    "acceptable_diagnoses": [
+      "battery_weak",
+      "battery_dead"
+    ],
+    "wrong_but_plausible": [
+      "alternator",
+      "starter_motor"
+    ],
+    "must_mention_safety": false,
+    "expected_cost_range_usd": [
+      150,
+      350
+    ],
+    "severity": "moderate"
+  },
+  "tags": [
+    "loud_but_moderate",
+    "overcall_probe",
+    "no_start_crank"
+  ],
+  "provenance": "Scenario: blind subagent (overcall-probe-v1, blind to held severity diff/anchors/existing cases). Severity+cost: Kai domain review 2026-06-13 (drive/don't-drive rule; sourced market cost). Diagnosis slug proposed from repair_target '12V starting battery replacement'."
+}
