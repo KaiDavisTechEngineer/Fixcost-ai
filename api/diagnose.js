@@ -16,8 +16,23 @@
 // this single call one at a time, each scored against champion afa1a2c before
 // it ships.
 import { guideRequest, parseGuide, resolveModel } from "./generate.js";
+import { buildDiagnosticianPrompt, DIAGNOSTICIAN_TOOL } from "../shared/guide.js";
 
 const ANTHROPIC_VERSION = "2023-06-01";
+// The diagnostician runs on the best reasoning model (Kai's call) — depth lives
+// here. Overridable for cost A/B without code change.
+const DIAGNOSTICIAN_MODEL = process.env.DIAGNOSTICIAN_MODEL || "claude-opus-4-8";
+const DIAGNOSTICIAN_MAX_TOKENS = 12000; // ranked differential + full guide
+
+function diagnosticianRequest(input) {
+  return {
+    model: DIAGNOSTICIAN_MODEL,
+    max_tokens: DIAGNOSTICIAN_MAX_TOKENS,
+    tools: [DIAGNOSTICIAN_TOOL],
+    tool_choice: { type: "tool", name: DIAGNOSTICIAN_TOOL.name },
+    messages: [{ role: "user", content: buildDiagnosticianPrompt(input) }],
+  };
+}
 
 async function anthropic(url, apiKey, body) {
   const r = await fetch(url, {
@@ -51,17 +66,20 @@ export function registerDiagnose(app, { ANTHROPIC_URL, clientIp, rateLimited }) 
       // TODO-PHASE1 (triage): Haiku call → clarifying questions or triage_complete.
       //   If questions, return {status:"needs_input", questions, triage_token} (HTTP 200)
       //   and resume on the client's follow-up POST.
-      // TODO-PHASE1 (diagnostician): Opus 4.8 streamed call → ranked differential.
       // TODO-PHASE1 (critic): Sonnet 4.6 verify → gate / one bounded revision.
 
-      // Increment 1: proven fast-path call (full guide), same contract.
-      const body = guideRequest(input);
+      // Increment 2: Opus diagnostician → ranked differential + full guide.
+      const body = diagnosticianRequest(input);
       const data = await anthropic(ANTHROPIC_URL, apiKey, body);
       const { guide, stop_reason, truncated, usage } = parseGuide(data);
+      if (!guide) throw new Error("diagnostician returned no guide");
       res.json({
-        result: guide ? JSON.stringify(guide) : "",
+        // result stays the {result: <stringified guide>} contract the client
+        // already renders; the guide now carries a `differential` array.
+        result: JSON.stringify(guide),
+        differential: guide.differential || [],
         model: body.model, stop_reason, truncated, usage,
-        pipeline: "increment-1-fastpath",
+        pipeline: "increment-2-differential",
       });
     } catch (err) {
       console.error("diagnose pipeline error", err.message);

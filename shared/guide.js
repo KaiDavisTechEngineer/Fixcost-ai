@@ -149,3 +149,51 @@ export const GUIDE_TOOL = {
     required: ["overview", "repair_target", "diagnosis_slug", "severity", "difficulty", "cost", "safety"],
   },
 };
+
+// ── Phase 1: master-mechanic DIFFERENTIAL (additive — the champion's GUIDE_TOOL
+// and buildPrompt above are untouched, so the Fast Path baseline stays frozen).
+// The full-team diagnostician (api/diagnose.js, Opus) uses these.
+const DIFFERENTIAL_ITEM = {
+  type: "object",
+  properties: {
+    cause: { type: "string", description: "the failing component/condition, e.g. 'warped front brake rotors'" },
+    diagnosis_slug: { type: "string", enum: DIAGNOSIS_SLUGS },
+    likelihood: { type: "string", enum: ["most_likely", "likely", "possible", "less_likely", "rule_out"] },
+    reasoning: { type: "string", description: "the causal mechanism — why this cause produces THESE reported symptoms" },
+    supporting: { type: "string", description: "reported symptoms/conditions that point TO this cause" },
+    contradicting: { type: "string", description: "what the user reported that argues AGAINST it, or 'none reported'" },
+    discriminator: { type: "string", description: "the single fact or cheapest test that separates this from its nearest competitor" },
+    confirmation_test: { type: "string", description: "the cheapest check to rule it in or out before buying parts" },
+    severity: { type: "string", enum: SEVERITY_LEVELS },
+    cost_range_usd: { type: "string", description: "rough range, e.g. '$200-$500'" },
+  },
+  required: ["cause", "diagnosis_slug", "likelihood", "reasoning", "supporting", "contradicting", "discriminator", "severity"],
+};
+
+// Same tool NAME as GUIDE_TOOL so parseGuide() works unchanged; superset schema
+// adding the ranked differential. Used only by the Opus full-team path.
+export const DIAGNOSTICIAN_TOOL = {
+  name: GUIDE_TOOL.name,
+  description: "Return a master-mechanic ranked differential diagnosis plus the full repair guide for the most-likely cause.",
+  input_schema: {
+    type: "object",
+    properties: {
+      differential: {
+        type: "array",
+        description: "3-6 candidate causes ranked most-likely first. The TOP entry must be the same cause as repair_target/diagnosis_slug/severity below.",
+        items: DIFFERENTIAL_ITEM,
+      },
+      ...GUIDE_TOOL.input_schema.properties,
+    },
+    required: [...GUIDE_TOOL.input_schema.required, "differential"],
+  },
+};
+
+// Extends the frozen buildPrompt with the differential instruction. Reuses the
+// single source of truth rather than duplicating it.
+export function buildDiagnosticianPrompt(input) {
+  return buildPrompt(input) +
+    "\n\nDIAGNOSE LIKE A MASTER TECHNICIAN. Before committing to a single repair_target, reason through a ranked DIFFERENTIAL of 3-6 candidate causes and return it in the \"differential\" field, most-likely first. For EACH candidate give: the causal mechanism (why it produces THESE specific symptoms), the reported evidence that supports it, what argues AGAINST it (or 'none reported'), the single discriminator that separates it from its nearest competitor, the cheapest confirmation test to run before buying parts, its severity, and a rough cost range. " +
+    "The TOP differential entry MUST be the same cause as repair_target/diagnosis_slug, and the guide's diagnosis/steps/cost/severity must reflect that top cause. " +
+    "Calibrate likelihood honestly — if the evidence is thin, say 'possible', not 'most_likely'. Do not fabricate precision.";
+}
