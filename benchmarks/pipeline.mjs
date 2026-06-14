@@ -14,10 +14,55 @@
  */
 import fs from "node:fs";
 import { guideRequest, parseGuide, DIAGNOSIS_SLUGS, SEVERITY_LEVELS } from "../api/generate.js";
+import {
+  buildDiagnosticianPrompt, DIAGNOSTICIAN_TOOL, buildTriagePrompt, TRIAGE_TOOL,
+} from "../shared/guide.js";
 
 const API_KEY = process.env.ANTHROPIC_API_KEY || "";
 const MAX_TOKENS_OVERRIDE = process.env.FIXCOST_MAX_TOKENS
   ? parseInt(process.env.FIXCOST_MAX_TOKENS, 10) : null;
+
+// Pipeline selector (additive — default "fast" is the frozen champion Fast Path,
+// byte-for-byte the same guideRequest the gate has always measured):
+//   FIXCOST_PIPELINE=fast          → guideRequest (Sonnet, GUIDE_TOOL)            [default]
+//   FIXCOST_PIPELINE=diagnostician → the ROUTED Phase-1 diagnose path: triage
+//                                    (Haiku) decides depth, then escalates to the
+//                                    full Opus differential OR takes the cheap
+//                                    Fast Path for clearly-simple non-safety jobs.
+// This mirrors the production /api/diagnose router so the gate measures the real
+// product (triage tokens are counted toward the case). The interactive Q&A leg is
+// bypassed headlessly: an ambiguous triage (triage_complete=false) escalates to
+// full, matching production where the resumed leg always runs the diagnostician.
+// parseGuide works unchanged because DIAGNOSTICIAN_TOOL reuses GUIDE_TOOL's name.
+const PIPELINE = process.env.FIXCOST_PIPELINE || "fast";
+const DIAGNOSTICIAN_MODEL = process.env.DIAGNOSTICIAN_MODEL || "claude-opus-4-8";
+const TRIAGE_MODEL = process.env.TRIAGE_MODEL || "claude-haiku-4-5";
+const DIAGNOSTICIAN_MAX_TOKENS = process.env.FIXCOST_DIAG_MAX_TOKENS
+  ? parseInt(process.env.FIXCOST_DIAG_MAX_TOKENS, 10) : 12000;
+
+function diagnosticianRequest(input) {
+  return {
+    model: DIAGNOSTICIAN_MODEL,
+    max_tokens: DIAGNOSTICIAN_MAX_TOKENS,
+    tools: [DIAGNOSTICIAN_TOOL],
+    tool_choice: { type: "tool", name: DIAGNOSTICIAN_TOOL.name },
+    messages: [{ role: "user", content: buildDiagnosticianPrompt(input) }],
+  };
+}
+
+function triageRequest(input) {
+  return {
+    model: TRIAGE_MODEL, max_tokens: 1024,
+    tools: [TRIAGE_TOOL], tool_choice: { type: "tool", name: TRIAGE_TOOL.name },
+    messages: [{ role: "user", content: buildTriagePrompt(input) }],
+  };
+}
+
+function toolInputOf(data, name) {
+  const blocks = Array.isArray(data?.content) ? data.content : [];
+  const t = blocks.find((b) => b && b.type === "tool_use" && b.name === name);
+  return t && t.input && typeof t.input === "object" ? t.input : null;
+}
 
 // HV / high-voltage safety language detector for the safety-compliance component.
 const HV_RE = /high[\s-]?voltage|\bhv\b|orange cable|orange (?:high[\s-]?voltage )?cable|electric shock|electrocution|de-?energize|service (?:plug|disconnect)|hybrid battery|traction battery|hv battery|isolate the battery|hazardous voltage/i;
@@ -79,8 +124,27 @@ async function callWithRetry(body, attempts = 4) {
   return { data: null, errorMsg: lastErr || "request failed after retries" };
 }
 
+const tokOf = (u) => (u?.input_tokens || 0) + (u?.output_tokens || 0);
+
 async function run(caseObj) {
-  const body = guideRequest(caseToInput(caseObj));
+  const input = caseToInput(caseObj);
+
+  // ROUTING (diagnostician mode only): triage decides depth. Triage tokens are
+  // counted toward the case so efficiency reflects the real product's spend.
+  let triageTokens = 0, tier = "n/a", body;
+  if (PIPELINE === "diagnostician") {
+    const { data: tdata } = await callWithRetry(triageRequest(input));
+    triageTokens = tokOf(tdata?.usage);
+    const triage = toolInputOf(tdata, TRIAGE_TOOL.name);
+    // Full UNLESS triage marked it clearly-simple, single-system, non-safety, and
+    // unambiguous. Triage failure (null) → full (never cheap-path on uncertainty).
+    const routeFull = !(triage && triage.route === "quick"
+      && !triage.safety_critical && triage.triage_complete !== false);
+    tier = routeFull ? "full" : "quick";
+    body = routeFull ? diagnosticianRequest(input) : guideRequest(input);
+  } else {
+    body = guideRequest(input);
+  }
   if (MAX_TOKENS_OVERRIDE) body.max_tokens = MAX_TOKENS_OVERRIDE;
   const model = body.model;
 
@@ -89,10 +153,12 @@ async function run(caseObj) {
   const latency_ms = Date.now() - t0;
 
   const base = {
-    id: caseObj.id, latency_ms, model,
+    id: caseObj.id, latency_ms, model, tier,
     diagnosis_slug: null, cost_range_usd: null, severity: null, mentions_safety: false,
-    tokens: (data?.usage?.input_tokens || 0) + (data?.usage?.output_tokens || 0),
+    differential: [],
+    tokens: triageTokens + tokOf(data?.usage),
     input_tokens: data?.usage?.input_tokens || 0, output_tokens: data?.usage?.output_tokens || 0,
+    triage_tokens: triageTokens,
     stop_reason: data?.stop_reason || null,
   };
 
@@ -110,9 +176,12 @@ async function run(caseObj) {
     cost_range_usd: isValid ? parseCostRange(guide.cost) : null,
     severity: isValid ? normalizeSeverity(guide.severity) : null,
     mentions_safety: isValid ? detectSafety(guide) : false,
-    tokens: (usage?.input_tokens || 0) + (usage?.output_tokens || 0),
+    // Raw ranked differential for the Change-2 scorer (empty on the Fast Path / quick tier).
+    differential: isValid && Array.isArray(guide.differential) ? guide.differential : [],
+    tokens: triageTokens + tokOf(usage),
     input_tokens: usage?.input_tokens || 0,
     output_tokens: usage?.output_tokens || 0,
+    triage_tokens: triageTokens,
     stop_reason,
   };
 }

@@ -199,7 +199,11 @@ export function buildDiagnosticianPrompt(input) {
   return buildPrompt(input) +
     "\n\nDIAGNOSE LIKE A MASTER TECHNICIAN. Before committing to a single repair_target, reason through a ranked DIFFERENTIAL of 3-6 candidate causes and return it in the \"differential\" field, most-likely first. For EACH candidate give: the causal mechanism (why it produces THESE specific symptoms), the reported evidence that supports it, what argues AGAINST it (or 'none reported'), the single discriminator that separates it from its nearest competitor, the cheapest confirmation test to run before buying parts, its severity, and a rough cost range. " +
     "The TOP differential entry MUST be the same cause as repair_target/diagnosis_slug, and the guide's diagnosis/steps/cost/severity must reflect that top cause. " +
-    "Calibrate likelihood honestly — if the evidence is thin, say 'possible', not 'most_likely'. Do not fabricate precision.";
+    "Calibrate likelihood honestly — if the evidence is thin, say 'possible', not 'most_likely'. Do not fabricate precision. " +
+    // Safety-critical floor: HV warnings for electrified vehicles must be RELIABLE,
+    // not probabilistic. The diagnostician was intermittently dropping them (e.g. a
+    // Leaf charge-port fault that reads low-voltage), so mandate them explicitly.
+    "\n\nHIGH-VOLTAGE SAFETY (non-negotiable): if this is a hybrid, plug-in hybrid, or battery-electric vehicle (any high-voltage traction system), the \"safety\" array MUST include explicit high-voltage warnings — de-energize / disable the HV system (service disconnect or service plug) before any work that could contact it, treat orange-jacketed HV cabling and connectors as live, and warn of the electric-shock / electrocution hazard — even when the specific fault appears low-voltage. Never omit HV warnings for an electrified vehicle.";
 }
 
 // ── Phase 1: TRIAGE (the mechanic interview). A cheap Haiku call decides whether
@@ -214,6 +218,15 @@ export const TRIAGE_TOOL = {
       triage_complete: {
         type: "boolean",
         description: "true if the complaint is already specific enough to produce a confident differential without asking anything.",
+      },
+      safety_critical: {
+        type: "boolean",
+        description: "true if the affected system is safety-critical: high-voltage/electrified (hybrid, plug-in hybrid, or battery-electric), braking, steering, SRS/airbags, or fuel system. When unsure, true. (FC-0012 lesson: an EV charge-port fault looks low-voltage but is safety-critical.)",
+      },
+      route: {
+        type: "string",
+        enum: ["full", "quick"],
+        description: "depth the job needs. 'full' = a master-level ranked differential (use when safety_critical, ambiguous/can't narrow to one clear cause, multi-system, or high-difficulty). 'quick' = a clearly simple, single-system, non-safety-critical maintenance/repair (routine oil change, wiper blade, cabin air filter) that a standard guide handles. Default to 'full' unless clearly simple.",
       },
       questions: {
         type: "array",
@@ -230,7 +243,7 @@ export const TRIAGE_TOOL = {
         },
       },
     },
-    required: ["triage_complete"],
+    required: ["triage_complete", "safety_critical", "route"],
   },
 };
 
@@ -242,6 +255,7 @@ export function buildTriagePrompt({ year, make, model, trim, problem, lang }) {
     `Vehicle: ${sanitize(year, MAX_INPUT.year)} ${sanitize(make, MAX_INPUT.make)} ${sanitize(model, MAX_INPUT.model)}${trimLine}\n` +
     `Complaint: ${sanitize(problem, MAX_INPUT.problem)}${langInstr}\n\n` +
     "Ask at most 3 questions, only the highest-yield ones a real tech would ask first — each must be answerable by the driver WITHOUT tools (what they hear/feel/see/when it happens), and each should split the likely causes. Give 2-4 concrete answer choices per question (include an 'I'm not sure' style option when sensible). " +
-    "If the complaint is already specific enough to diagnose confidently, set triage_complete=true and ask nothing. Prefer fewer questions over more — do not pad."
+    "If the complaint is already specific enough to diagnose confidently, set triage_complete=true and ask nothing. Prefer fewer questions over more — do not pad. " +
+    "\n\nALSO route by depth (so spend scales to the job). Set safety_critical=true if the affected system is high-voltage/electrified (hybrid/PHEV/BEV), braking, steering, SRS/airbags, or fuel — when unsure, true. Set route='full' if the problem is safety_critical, ambiguous (you cannot confidently narrow to one clear cause), multi-system, or high-difficulty. Set route='quick' ONLY for a clearly simple, single-system, non-safety-critical maintenance item (routine oil change, wiper blade, cabin air filter, and the like). When in doubt, choose 'full' — never 'quick' for anything safety-critical."
   );
 }

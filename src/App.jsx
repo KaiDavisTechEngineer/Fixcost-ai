@@ -74,6 +74,8 @@ const S = {
     e_net:"Network error. Check your connection.",e_timeout:"Request timed out. Try again.",e_session:"Session limit reached. Refresh the page.",e_default:"Something went wrong. Please try again.",
     t_added:"added",t_removed:"Vehicle removed",t_gsaved:"Guide saved to history",t_gdel:"Guide deleted",t_settings:"Settings saved",t_cleared:"All data cleared",
     mc:"Cancel",diff_beg:"Suitable for most DIYers",diff_int:"Some experience recommended",diff_adv:"Experienced mechanics only",lang_en:"EN",lang_es:"ES",loading:"Loading…",
+    tri_h:"A few quick questions",tri_sub:"Answer what you can — it sharpens the diagnosis. Skip any you're unsure of.",tri_continue:"Continue →",tri_skip:"You can continue without answering every question.",
+    dx_h:"Differential Diagnosis",dx_disc:"Tells it apart",dx_test:"Cheapest test",lk_most:"Most likely",lk_likely:"Likely",lk_possible:"Possible",lk_less:"Less likely",lk_ruleout:"Rule out",
   },
   es: {
     nav_diagnose:"Diagnosticar",nav_garage:"Mi Garaje",nav_history:"Historial",nav_settings:"Ajustes",nav_about:"Acerca de",nav_back:"← Inicio",launch:"Abrir App →",lnk_feat:"Funciones",lnk_how:"Cómo Funciona",lnk_faq:"Preguntas",
@@ -144,6 +146,8 @@ const S = {
     e_net:"Error de red. Verifica tu conexión.",e_timeout:"La solicitud expiró. Intenta de nuevo.",e_session:"Límite de sesión alcanzado. Recarga la página.",e_default:"Algo salió mal. Por favor intenta de nuevo.",
     t_added:"agregado",t_removed:"Vehículo eliminado",t_gsaved:"Guía guardada en el historial",t_gdel:"Guía eliminada",t_settings:"Ajustes guardados",t_cleared:"Todos los datos eliminados",
     mc:"Cancelar",diff_beg:"Adecuado para la mayoría de los aficionados",diff_int:"Se recomienda algo de experiencia",diff_adv:"Solo para mecánicos experimentados",lang_en:"EN",lang_es:"ES",loading:"Cargando…",
+    tri_h:"Unas preguntas rápidas",tri_sub:"Responde lo que puedas — afina el diagnóstico. Omite las que no sepas.",tri_continue:"Continuar →",tri_skip:"Puedes continuar sin responder todas las preguntas.",
+    dx_h:"Diagnóstico Diferencial",dx_disc:"Lo distingue",dx_test:"Prueba más barata",lk_most:"Más probable",lk_likely:"Probable",lk_possible:"Posible",lk_less:"Menos probable",lk_ruleout:"Descartar",
   },
 };
 
@@ -1005,6 +1009,47 @@ async function callAI(year,make,model,trim,problem,stateCode,lang,externalSignal
   return { sections: jsonToSections(obj, lang, {year,make,model,trim,problem}), raw: JSON.stringify(obj), template: true };
 }
 
+// ── Phase 1: FULL-TEAM diagnose path (triage → ranked differential). Additive.
+// The client tries this FIRST; any non-OK / {error} / {fallback} response makes
+// the caller fall back to callAI (/api/generate → template), so the bookmarked
+// single-shot flow never dead-ends. Same {result} contract — differential is extra.
+//   resume = null               → initial submit (server may ask triage questions)
+//   resume = {resume_token,answers} → second leg, after the user picked answers
+// Returns either {needsInput, questions, resume_token} or the callAI-shaped
+// {sections, raw, differential, template:false}. Throws → caller falls back.
+async function callDiagnose(year,make,model,trim,problem,stateCode,lang,externalSignal,resume){
+  const body = resume?.resume_token
+    ? { resume_token: resume.resume_token, answers: resume.answers || {}, lang }
+    : { year, make, model, trim, problem, stateCode, lang };
+  const r = await fetch("/api/diagnose", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    signal: externalSignal,
+  });
+  if (!r.ok) throw new Error("diagnose HTTP " + r.status);
+  const data = await r.json();
+  if (data?.error) throw new Error(data.error);
+  // Triage wants high-yield follow-up answers before it will commit to a guide.
+  if (data?.status === "needs_input" && Array.isArray(data.questions) && data.questions.length && data.resume_token) {
+    return { needsInput: true, questions: data.questions.slice(0, 3), resume_token: data.resume_token };
+  }
+  let obj = null;
+  try { obj = JSON.parse(data?.result || ""); } catch {}
+  if (!obj || typeof obj !== "object" || !(obj.overview || obj.cost || obj.difficulty)) {
+    throw new Error("diagnose: invalid guide");
+  }
+  _sessionCalls++;
+  return {
+    sections: jsonToSections(obj, lang, { year, make, model, trim, problem }),
+    raw: JSON.stringify(obj),
+    differential: Array.isArray(data.differential) && data.differential.length
+      ? data.differential
+      : (Array.isArray(obj.differential) ? obj.differential : []),
+    template: false,
+  };
+}
+
 async function fetchYT(terms,key,signal){
   if(!key||!terms.length)return[];
   const seen=new Set(),results=[];
@@ -1473,6 +1518,47 @@ function GuideVisuals({ guide }) {
   );
 }
 
+// Phase 1: the master-mechanic ranked differential, rendered above the guide
+// sections. Additive — absent (empty array) on the Fast Path / template fallback,
+// so this renders nothing and the existing layout is unchanged.
+function DifferentialList({ items }) {
+  const lang = useLang(), T = S[lang] || S.en;
+  if (!Array.isArray(items) || !items.length) return null;
+  const LK = {
+    most_likely: { label: T.lk_most, color: "#22c55e" },
+    likely: { label: T.lk_likely, color: "#84cc16" },
+    possible: { label: T.lk_possible, color: "#f59e0b" },
+    less_likely: { label: T.lk_less, color: "#f97316" },
+    rule_out: { label: T.lk_ruleout, color: "#6b7280" },
+  };
+  const cardStyle = { background: "#0f0f0f", border: "1px solid #1a1a1a", borderRadius: 10, padding: "14px 16px", marginBottom: 10 };
+  const hdStyle = { fontFamily: "'Barlow Condensed',sans-serif", fontSize: 12, fontWeight: 800, color: "#e84a2a", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12 };
+  return (
+    <div style={{ marginBottom: 18 }}>
+      <p style={hdStyle}>{T.dx_h}</p>
+      {items.map((it, i) => {
+        const lk = LK[it.likelihood] || { label: it.likelihood || "", color: "#6b7280" };
+        return (
+          <div key={i} style={cardStyle}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+              <p style={{ fontWeight: 800, fontSize: 15 }}>{i + 1}. {it.cause}</p>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <span style={{ background: lk.color + "1a", color: lk.color, border: "1px solid " + lk.color + "33", borderRadius: 5, padding: "3px 10px", fontSize: 11, fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, letterSpacing: 1, textTransform: "uppercase" }}>{lk.label}</span>
+                {it.cost_range_usd && <span className="tag tag-gray">{it.cost_range_usd}</span>}
+              </div>
+            </div>
+            {it.reasoning && <p style={{ fontSize: 13, color: "#999", lineHeight: 1.6, marginBottom: 6 }}>{it.reasoning}</p>}
+            <div style={{ display: "grid", gap: 4, fontSize: 12, color: "#777" }}>
+              {it.discriminator && <p><strong style={{ color: "#aaa" }}>{T.dx_disc}:</strong> {it.discriminator}</p>}
+              {it.confirmation_test && <p><strong style={{ color: "#aaa" }}>{T.dx_test}:</strong> {it.confirmation_test}</p>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function ResultSecs({ sections, videos, ytTerms, hasYT, pq, loadVids, vehicleCtx }) {
   const lang = useLang(), T = S[lang] || S.en;
   // Build vehicle prefix for shop searches (e.g. "2013 Ford C-Max 2.0L")
@@ -1604,6 +1690,8 @@ function DiagnosePage({ prefill, onSaveHist, ytKey, defState }) {
   const [saved, setSaved] = useState(false);
   const [showIss, setSI] = useState(false);
   const [raw, setRaw] = useState(null);
+  const [triage, setTriage] = useState(null);          // {questions, resume_token, answers} during the round-trip
+  const [differential, setDifferential] = useState([]); // ranked causes from /api/diagnose
   const [ferrs, setFerrs] = useState({});
   const [cd, setCd] = useState(0);
   const [sessLeft, setSL] = useState(SESSION_MAX - _sessionCalls);
@@ -1651,6 +1739,46 @@ function DiagnosePage({ prefill, onSaveHist, ytKey, defState }) {
     if (!p) e.problem = T.v_prob_req; else if (p.length < 6) e.problem = T.v_prob_short; else if (p.length > MAX_PROBLEM) e.problem = T.v_prob_long;
     return e;
   };
+  // Render a finished guide (Fast Path OR full-team) — shared by the initial
+  // submit and the post-triage Continue, so both legs land identically.
+  const applyResult = async (result, signal) => {
+    const parsed = result.sections || parseSec(result.raw || result);
+    const rawText = result.raw || (typeof result === "string" ? result : sectionsToText(parsed));
+    const d = extractDiff(parsed), terms = extractYT(parsed);
+    setRaw(rawText); setSecs(parsed); setDiff(d); setYT(terms);
+    setDifferential(Array.isArray(result.differential) ? result.differential : []);
+    setSL(SESSION_MAX - _sessionCalls); ssDraft.clear();
+    genRef.current = { year: form.year, make: form.make, model: form.model, trim: form.trim, problem: form.problem, state: form.state, wasTemplate: !!result.template };
+    setInfo(result.template
+      ? (lang === "es"
+          ? "Modo plantilla activo. La IA no está disponible en este entorno — habilita 'Create AI-powered artifacts' en claude.ai → Configuración → Perfil → Vista previa de funciones."
+          : "Template mode active. AI is unavailable in this runtime — enable 'Create AI-powered artifacts' in claude.ai → Settings → Profile → Feature preview.")
+      : null);
+    if (ytKey && terms.length && !signal.aborted) {
+      setLV(true);
+      try { const v = await fetchYT(terms, ytKey, signal); if (!signal.aborted) setVids(v); } catch {}
+      if (!signal.aborted) setLV(false);
+    }
+  };
+  // Try the full-team /api/diagnose path; cleanly fall back to the frozen Fast
+  // Path (callAI → /api/generate → template) on any diagnose error so the
+  // bookmarked app never dead-ends. Returns {triaged} | {done} | {aborted}.
+  const runPipeline = async (resume, signal) => {
+    let result;
+    try {
+      result = await callDiagnose(form.year, form.make, form.model, form.trim, form.problem, form.state, lang, signal, resume);
+    } catch (e) {
+      if (e?.name === "AbortError" || signal.aborted) return { aborted: true };
+      result = await callAI(form.year, form.make, form.model, form.trim, form.problem, form.state, lang, signal);
+    }
+    if (signal.aborted) return { aborted: true };
+    if (result.needsInput) {
+      setTriage({ questions: result.questions, resume_token: result.resume_token, answers: {} });
+      return { triaged: true };
+    }
+    await applyResult(result, signal);
+    return { done: true };
+  };
   const handleSubmit = async () => {
     if (inFlight.current) return;
     const errs = validate(form);
@@ -1664,25 +1792,10 @@ function DiagnosePage({ prefill, onSaveHist, ytKey, defState }) {
     abortRef.current?.abort();
     abortRef.current = new AbortController();
     const signal = abortRef.current.signal;
-    setLd(true); setErr(null); setInfo(null); setSecs([]); setDiff(null); setYT([]); setVids([]); setSaved(false); setRaw(null);
+    setLd(true); setErr(null); setInfo(null); setSecs([]); setDiff(null); setYT([]); setVids([]); setSaved(false); setRaw(null); setTriage(null); setDifferential([]);
+    let outcome = null;
     try {
-      const result = await callAI(form.year, form.make, form.model, form.trim, form.problem, form.state, lang, signal);
-      if (signal.aborted) return;
-      const parsed = result.sections || parseSec(result.raw || result);
-      const rawText = result.raw || (typeof result === "string" ? result : sectionsToText(parsed));
-      const d = extractDiff(parsed), terms = extractYT(parsed);
-      setRaw(rawText); setSecs(parsed); setDiff(d); setYT(terms); setSL(SESSION_MAX - _sessionCalls); ssDraft.clear();
-      genRef.current = { year: form.year, make: form.make, model: form.model, trim: form.trim, problem: form.problem, state: form.state, wasTemplate: !!result.template };
-      setInfo(result.template
-        ? (lang === "es"
-            ? "Modo plantilla activo. La IA no está disponible en este entorno — habilita 'Create AI-powered artifacts' en claude.ai → Configuración → Perfil → Vista previa de funciones."
-            : "Template mode active. AI is unavailable in this runtime — enable 'Create AI-powered artifacts' in claude.ai → Settings → Profile → Feature preview.")
-        : null);
-      if (ytKey && terms.length && !signal.aborted) {
-        setLV(true);
-        try { const v = await fetchYT(terms, ytKey, signal); if (!signal.aborted) setVids(v); } catch {}
-        if (!signal.aborted) setLV(false);
-      }
+      outcome = await runPipeline(null, signal);
     } catch (e) {
       if (e?.name === "AbortError" || signal.aborted) return;
       const errMsg = safeErr(e, lang);
@@ -1690,8 +1803,34 @@ function DiagnosePage({ prefill, onSaveHist, ytKey, defState }) {
     } finally {
       inFlight.current = false;
       setLd(false);
-      // Shorter cooldown on error (2s) so retry feels responsive; full 7s only on success
-      setCd(secs.length > 0 ? Math.ceil(COOLDOWN_MS / 1000) : 2);
+      // No cooldown when we only asked triage (cheap); full cooldown after a real
+      // guide; short 2s after an error so retry feels responsive.
+      setCd(outcome?.triaged ? 0 : outcome?.done ? Math.ceil(COOLDOWN_MS / 1000) : 2);
+    }
+  };
+  // Second leg: the user answered the triage questions → resume the diagnosis.
+  const handleContinue = async () => {
+    if (inFlight.current || !triage) return;
+    if (_sessionCalls >= SESSION_MAX) { setErr(T.e_session); return; }
+    inFlight.current = true;
+    lastCall.current = Date.now();
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+    const signal = abortRef.current.signal;
+    const saved = triage;
+    setLd(true); setErr(null); setInfo(null); setTriage(null);
+    let outcome = null;
+    try {
+      outcome = await runPipeline({ resume_token: saved.resume_token, answers: saved.answers }, signal);
+    } catch (e) {
+      if (e?.name === "AbortError" || signal.aborted) return;
+      const errMsg = safeErr(e, lang);
+      if (errMsg) setErr(errMsg);
+      setTriage(saved); // restore the questions so the user can retry, not dead-end
+    } finally {
+      inFlight.current = false;
+      setLd(false);
+      setCd(outcome?.done ? Math.ceil(COOLDOWN_MS / 1000) : 2);
     }
   };
   const handleSave = async () => {
@@ -1699,7 +1838,7 @@ function DiagnosePage({ prefill, onSaveHist, ytKey, defState }) {
     const rec = { id: gid(), ts: Date.now(), year: form.year, make: form.make, model: form.model, trim: form.trim || "", problem: form.problem, difficulty: diff, result: raw, lang };
     await ss2("history:" + rec.id, rec); onSaveHist(rec); setSaved(true);
   };
-  const reset = () => { abortRef.current?.abort(); setSecs([]); setDiff(null); setErr(null); setSaved(false); setYT([]); setVids([]); setRaw(null); setFerrs({}); setForm(f => ({ ...f, problem: "" })); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const reset = () => { abortRef.current?.abort(); setSecs([]); setDiff(null); setErr(null); setSaved(false); setYT([]); setVids([]); setRaw(null); setTriage(null); setDifferential([]); setFerrs({}); setForm(f => ({ ...f, problem: "" })); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const hasSecs = secs.length > 0;
   const repairTarget = (() => { try { const g = raw && raw.trim().startsWith("{") ? JSON.parse(raw) : null; return g?.repair_target || ""; } catch { return ""; } })();
   const pq = hasSecs ? partsQ(form.year, form.make, form.model, form.problem, repairTarget) : "";
@@ -1806,6 +1945,34 @@ function DiagnosePage({ prefill, onSaveHist, ytKey, defState }) {
           <button className="btn-retry" onClick={handleSubmit} disabled={loading || cd > 0} style={{ alignSelf: "flex-start" }}><Spin size={16} color="#f59e0b" />{T.btn_retry}</button>
         </div>
       )}
+      {triage && !loading && (
+        <div className="card fu" style={{ padding: 24, marginBottom: 22, borderLeft: "3px solid #e84a2a" }}>
+          <p className="lbl" style={{ marginBottom: 6 }}>{T.tri_h}</p>
+          <p style={{ color: "#555", fontSize: 13, lineHeight: 1.6, marginBottom: 18 }}>{T.tri_sub}</p>
+          {triage.questions.map((q, qi) => (
+            <div key={q.id || qi} style={{ marginBottom: 18 }}>
+              <p style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>{qi + 1}. {q.question}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {(q.choices || []).map((c, ci) => {
+                  const sel = triage.answers[q.id] === c;
+                  return (
+                    <button key={ci} type="button" className={"pill" + (sel ? " pill-on" : "")} aria-pressed={sel}
+                      onClick={() => setTriage(t => ({ ...t, answers: { ...t.answers, [q.id]: c } }))}>
+                      {sel ? "✓ " : ""}{c}
+                    </button>
+                  );
+                })}
+              </div>
+              {q.why && <p style={{ fontSize: 11, color: "#3a3a3a", marginTop: 6 }}>{q.why}</p>}
+            </div>
+          ))}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginTop: 4 }}>
+            <button className="btn" onClick={handleContinue} disabled={loading} style={{ minWidth: 160, justifyContent: "center" }}>{T.tri_continue}</button>
+            <button className="btn-ghost" onClick={() => setTriage(null)}>{T.mc}</button>
+            <span style={{ fontSize: 11, color: "#3a3a3a" }}>{T.tri_skip}</span>
+          </div>
+        </div>
+      )}
       {loading && <LoadingGuide />}
       {hasSecs && !loading && (
         <div>
@@ -1830,6 +1997,7 @@ function DiagnosePage({ prefill, onSaveHist, ytKey, defState }) {
             </div>
           </div>
           {(() => { try { const g = raw && raw.trim().startsWith("{") ? JSON.parse(raw) : null; return g ? <GuideVisuals guide={g} /> : null; } catch { return null; } })()}
+          <DifferentialList items={differential} />
           <ResultSecs sections={secs} videos={videos} ytTerms={ytTerms} hasYT={!!ytKey} pq={pq} loadVids={loadVids} vehicleCtx={{year:form.year,make:form.make,model:form.model,trim:form.trim}} />
           <div style={{ marginTop: 16, padding: "12px 16px", background: "#e84a2a08", border: "1px solid #e84a2a18", borderRadius: 8 }}>
             <p style={{ fontSize: 12, color: "#555", lineHeight: 1.6 }}>⚠️ <strong style={{ color: "#888" }}>{T.disc_h}</strong> {T.disc}</p>

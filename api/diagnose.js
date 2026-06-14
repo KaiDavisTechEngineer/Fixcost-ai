@@ -9,7 +9,7 @@
 // Pipeline:  intake → triage (Haiku, optional user round-trip)
 //                   → diagnostician (Opus 4.8: ranked differential + full guide)
 //                   → [TODO] critic (Sonnet 4.6: gate / one bounded revision)
-import { parseGuide } from "./generate.js";
+import { parseGuide, guideRequest } from "./generate.js";
 import {
   buildDiagnosticianPrompt, DIAGNOSTICIAN_TOOL,
   buildTriagePrompt, TRIAGE_TOOL,
@@ -86,7 +86,7 @@ export function registerDiagnose(app, { ANTHROPIC_URL, clientIp, rateLimited }) 
     }
     const body = req.body || {};
     try {
-      let input, triageAnswers = null;
+      let input, triageAnswers = null, routeFull = true;
 
       if (body.resume_token) {
         // RESUME: the client answered the triage questions.
@@ -101,9 +101,11 @@ export function registerDiagnose(app, { ANTHROPIC_URL, clientIp, rateLimited }) 
         }
         input = { year, make, model, trim, problem, stateCode, lang };
 
-        // TRIAGE: ask high-yield follow-ups if they'd narrow the diagnosis.
+        // TRIAGE: ask high-yield follow-ups if they'd narrow the diagnosis,
+        // and decide routing depth (spend scales to the job).
         const triage = await runTriage(ANTHROPIC_URL, apiKey, input);
         if (triage && triage.triage_complete === false && Array.isArray(triage.questions) && triage.questions.length) {
+          // Ambiguous → ask; the resumed leg always runs the full diagnostician.
           const questions = triage.questions.slice(0, 3);
           return res.json({
             status: "needs_input",
@@ -111,22 +113,27 @@ export function registerDiagnose(app, { ANTHROPIC_URL, clientIp, rateLimited }) 
             resume_token: b64.enc({ input, questions }),
           });
         }
-        // triage_complete (or none) → straight to the diagnostician.
+        // Route by depth: full Opus differential UNLESS triage marked this a
+        // clearly simple, single-system, NON-safety-critical job. Safety-critical
+        // always escalates (FC-0012: an EV charge-port fault looks low-voltage).
+        routeFull = !(triage && triage.route === "quick" && !triage.safety_critical);
       }
 
-      // DIAGNOSTICIAN
+      // DISPATCH: full = Opus diagnostician + ranked differential; quick = the
+      // frozen Fast Path (Sonnet, no differential) — same {result} contract.
       const diagInput = triageAnswers
         ? { ...input, problem: `${input.problem}\n\nFollow-up answers:\n${triageAnswers}` }
         : input;
-      const reqBody = diagnosticianRequest(diagInput);
+      const reqBody = routeFull ? diagnosticianRequest(diagInput) : guideRequest(diagInput);
       const data = await anthropic(ANTHROPIC_URL, apiKey, reqBody);
       const { guide, stop_reason, truncated, usage } = parseGuide(data);
       if (!guide) throw new Error("diagnostician returned no guide");
       res.json({
         result: JSON.stringify(guide),
-        differential: guide.differential || [],
-        model: reqBody.model, stop_reason, truncated, usage,
-        pipeline: "increment-3-triage+differential",
+        differential: routeFull ? (guide.differential || []) : [],
+        model: reqBody.model, tier: routeFull ? "full" : "quick",
+        stop_reason, truncated, usage,
+        pipeline: "increment-4-routed",
       });
     } catch (err) {
       console.error("diagnose pipeline error", err.message);
