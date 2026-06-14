@@ -177,13 +177,17 @@ export const DIAGNOSTICIAN_TOOL = {
   description: "Return a master-mechanic ranked differential diagnosis plus the full repair guide for the most-likely cause.",
   input_schema: {
     type: "object",
+    // Core guide fields FIRST so they always generate within budget; the longer
+    // differential LAST. Property order drives generation order — differential
+    // first made the model spend its budget there and drop the required scalars
+    // (repair_target/severity/cost).
     properties: {
+      ...GUIDE_TOOL.input_schema.properties,
       differential: {
         type: "array",
-        description: "3-6 candidate causes ranked most-likely first. The TOP entry must be the same cause as repair_target/diagnosis_slug/severity below.",
+        description: "3-6 candidate causes ranked most-likely first. The TOP entry must be the same cause as repair_target/diagnosis_slug/severity above.",
         items: DIFFERENTIAL_ITEM,
       },
-      ...GUIDE_TOOL.input_schema.properties,
     },
     required: [...GUIDE_TOOL.input_schema.required, "differential"],
   },
@@ -196,4 +200,48 @@ export function buildDiagnosticianPrompt(input) {
     "\n\nDIAGNOSE LIKE A MASTER TECHNICIAN. Before committing to a single repair_target, reason through a ranked DIFFERENTIAL of 3-6 candidate causes and return it in the \"differential\" field, most-likely first. For EACH candidate give: the causal mechanism (why it produces THESE specific symptoms), the reported evidence that supports it, what argues AGAINST it (or 'none reported'), the single discriminator that separates it from its nearest competitor, the cheapest confirmation test to run before buying parts, its severity, and a rough cost range. " +
     "The TOP differential entry MUST be the same cause as repair_target/diagnosis_slug, and the guide's diagnosis/steps/cost/severity must reflect that top cause. " +
     "Calibrate likelihood honestly — if the evidence is thin, say 'possible', not 'most_likely'. Do not fabricate precision.";
+}
+
+// ── Phase 1: TRIAGE (the mechanic interview). A cheap Haiku call decides whether
+// a few follow-up questions would meaningfully narrow the differential, and if so
+// asks them with concrete answer choices a driver can pick without tools.
+export const TRIAGE_TOOL = {
+  name: "emit_triage",
+  description: "Decide whether short follow-up questions would narrow the diagnosis, and if so ask them.",
+  input_schema: {
+    type: "object",
+    properties: {
+      triage_complete: {
+        type: "boolean",
+        description: "true if the complaint is already specific enough to produce a confident differential without asking anything.",
+      },
+      questions: {
+        type: "array",
+        description: "0-3 high-yield follow-up questions. Each must be answerable by a driver WITHOUT tools, and pick the question that best prunes the likely causes.",
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "short stable id, e.g. q1" },
+            question: { type: "string" },
+            choices: { type: "array", items: { type: "string" }, description: "2-4 concrete answer choices" },
+            why: { type: "string", description: "one line: which causes this separates" },
+          },
+          required: ["id", "question", "choices"],
+        },
+      },
+    },
+    required: ["triage_complete"],
+  },
+};
+
+export function buildTriagePrompt({ year, make, model, trim, problem, lang }) {
+  const trimLine = trim ? ` Trim/Engine: ${sanitize(trim, MAX_INPUT.trim)}.` : "";
+  const langInstr = lang === "es" ? "\nWRITE ALL QUESTION/CHOICE STRINGS IN SPANISH." : "";
+  return (
+    "You are a master auto mechanic doing service-intake on a customer's complaint. Decide whether a few short follow-up questions would MEANINGFULLY narrow the diagnosis.\n\n" +
+    `Vehicle: ${sanitize(year, MAX_INPUT.year)} ${sanitize(make, MAX_INPUT.make)} ${sanitize(model, MAX_INPUT.model)}${trimLine}\n` +
+    `Complaint: ${sanitize(problem, MAX_INPUT.problem)}${langInstr}\n\n` +
+    "Ask at most 3 questions, only the highest-yield ones a real tech would ask first — each must be answerable by the driver WITHOUT tools (what they hear/feel/see/when it happens), and each should split the likely causes. Give 2-4 concrete answer choices per question (include an 'I'm not sure' style option when sensible). " +
+    "If the complaint is already specific enough to diagnose confidently, set triage_complete=true and ask nothing. Prefer fewer questions over more — do not pad."
+  );
 }
